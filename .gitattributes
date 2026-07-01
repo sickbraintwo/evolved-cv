@@ -1,0 +1,3 @@
+# Shell scripts must stay LF even on Windows checkouts, or Git Bash chokes on the
+# CRLF with a `\r`: bad interpreter / `$'\r'` error when running them.
+*.sh text eol=lf

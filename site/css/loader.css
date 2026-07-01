@@ -1,0 +1,99 @@
+/* ==========================================================================
+   loader.css — full-viewport mini-loader overlay (Block 1: Velo + gate).
+   Visible from the very first paint (element in index.html, linked in <head>
+   before any JS loads). Fades out once fonts + Three.js ctx + name targets are
+   all ready, then the intro animation plays underneath so the user never sees
+   the naked DOM hero text.
+   ========================================================================== */
+
+/* ---- overlay ---- */
+
+#page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9000; /* above #bg3d (z:-1), header (z:50), filter panel (z:200), cursor (z:9999→9000 here is intentional: cursor hidden while loading) */
+  background: #0A0814; /* var(--c-bg) hardcoded so it paints before tokens.css cascade */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* pointer-events on by default: blocks all interaction during load */
+  pointer-events: all;
+
+  /* fade-out transition triggered by adding .page-loader--hidden */
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+/* Step 1: fade opacity. Step 2: display:none is applied by JS after transition end
+   so the element leaves the layer stack and no longer blocks clicks. */
+#page-loader.page-loader--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- glyph mark — the ◈ constellation compass, same as the FAB icon ---- */
+
+.loader__mark {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.loader__glyph {
+  font-size: 2rem;
+  line-height: 1;
+  /* Use --c-accent-1 fallback to #A06BFF for first-paint before tokens are applied */
+  color: #A06BFF;
+  /* gentle breath: scale 1 → 1.15 → 1 on a 2s loop, offset by slight opacity pulse */
+  animation: loader-breath 2s ease-in-out infinite;
+  user-select: none;
+  /* a11y: decorative, hidden from SR (the role="status" sibling covers it) */
+  aria-hidden: true;
+}
+
+/* subtle halo that fades in/out in sync with the breath */
+.loader__glyph::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.18) 0%, transparent 70%);
+  animation: loader-halo 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes loader-breath {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%       { transform: scale(1.18); opacity: 1;   }
+}
+
+@keyframes loader-halo {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50%       { opacity: 1; transform: scale(1);   }
+}
+
+/* ---- visually-hidden status text (a11y) ---- */
+
+.loader__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- reduced-motion: skip the pulse animations, keep the cover ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .loader__glyph       { animation: none; opacity: 0.8; }
+  .loader__glyph::after { animation: none; }
+  #page-loader          { transition: opacity 0.15s ease-out; }
+}

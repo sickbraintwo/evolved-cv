@@ -1,0 +1,288 @@
+/* ==========================================================================
+   footbar.css — fixed bottom expskill filter bar, desktop only.
+   Visible ONLY in the Experience scene (body.scene-nav[data-scene="experience"]).
+   Uses the same CSS tokens as the rest of the site (tokens.css).
+
+   z-index: 60 — above content (50 header) but below the FAB (80) and
+   the filter overlay (70).
+   ========================================================================== */
+
+/* ---------- contenitore barra -------------------------------------------- */
+
+.footbar {
+  /* clears the dot-nav (fixed left:24px, dot ~18px): a corridor on the LEFT and
+     a mirror one on the RIGHT, so the bar never overlaps the dots. */
+  --footbar-inset: 76px;
+  /* proximity growth: 0 = peek (small), 1 = full. JS (footbar.js) interpolates
+     it in a rAF loop and writes it here; CSS maps it to `scale`. */
+  --grow: 0;
+  --peek-scale: 0.64;
+
+  /* ANCHORED to the bottom edge (starts from the bottom: grows upward, simpler
+     slide from small to large), centred horizontally. Using INDIVIDUAL properties
+     translate/scale so the appear-slide (on `translate`, with transition) and
+     the proximity growth (`scale`, driven by JS without transition) don't
+     interfere with each other. */
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform-origin: bottom center;               /* cresce verso l'alto dal bordo */
+  translate: -50% 100%;                           /* hidden: fully below the edge */
+  scale: calc(var(--peek-scale) + (1 - var(--peek-scale)) * var(--grow));
+  z-index: 60;
+
+  /* adaptive width: covers the content but stays within the two corridors */
+  width: max-content;
+  max-width: calc(100vw - var(--footbar-inset) * 2);
+
+  /* internal layout: chips in a row, wrap if needed, grouped by domain */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-3, 16px) var(--space-4, 24px) var(--space-3, 16px);
+
+  /* dark semi-transparent background + blur (consistent with the FAB) */
+  background: color-mix(in srgb, var(--c-surface, #1a1c26) 88%, transparent);
+  border: 1px solid var(--c-border, rgba(255 255 255 / .08));
+  border-bottom: none;                 /* flush against the viewport edge */
+  /* rounded arc ONLY on top; straight on the bottom at the screen edge */
+  border-radius: 28px 28px 0 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 -6px 32px color-mix(in srgb, var(--c-bg, #0d0f18) 70%, transparent),
+    0 0 0 1px var(--c-border, rgba(255 255 255 / .06));
+
+  /* hidden by default: slid below the edge + invisible. Note: `scale` is NOT
+     transitioned (the JS lerp smooths it); only `translate` transitions (slide). */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity    var(--dur-base, .22s) var(--ease-out, ease),
+    translate  var(--dur-base, .22s) var(--ease-out, ease),
+    visibility 0s linear var(--dur-base, .22s);
+}
+
+/* ---------- visible ONLY in the Experience scene (desktop, scene-nav) ------ */
+
+body.scene-nav[data-scene="experience"] .footbar {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  translate: -50% 0;
+  transition:
+    opacity   var(--dur-base, .22s) var(--ease-out, ease),
+    translate var(--dur-base, .22s) var(--ease-out, ease),
+    visibility 0s linear 0s;
+}
+
+/* ---------- hidden on mobile (the footbar is not even created, but
+   we add the CSS guard as a double-safety) --------------------------------- */
+
+@media (max-width: 767px) {
+  .footbar { display: none; }
+}
+
+/* ---------- gruppo dominio ------------------------------------------------ */
+
+.footbar__group {
+  --chip-c: var(--c-accent-1, #b48ee8);
+  display: contents; /* groups are logical, chips flow into the row */
+}
+
+/* thin visual separator between groups (a left border on the first chip
+   of each group is impractical with display:contents, so we use a ::before
+   divider on the .footbar__group element but only when the parent is flex —
+   since display:contents generates no box, we insert a separator div). */
+
+/* ---------- chip singola -------------------------------------------------- */
+
+/* Shared base for the three footbar controls (chip / reset / apply). Only the
+   6 declarations that were byte-identical across all three live here; each
+   control keeps its own display, padding, border/background/colour, font-weight
+   and transition below. */
+.footbar__chip,
+.footbar__reset,
+.footbar__apply {
+  align-items: center;
+  border-radius: var(--radius-pill, 9999px);
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: var(--fs-1, .75rem);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.footbar__chip {
+  --chip-c: var(--c-accent-1, #b48ee8);
+
+  display: inline-flex;
+  padding: 6px 14px;
+  border: 1px solid color-mix(in srgb, var(--chip-c) 40%, transparent);
+  background: color-mix(in srgb, var(--chip-c) 8%, transparent);
+  color: var(--c-text, #e8eaf6);
+  font-weight: 500;
+
+  /* hover and active transition */
+  transition:
+    background   var(--dur-fast, .12s) var(--ease-out, ease),
+    border-color var(--dur-fast, .12s) var(--ease-out, ease),
+    box-shadow   var(--dur-base, .22s) var(--ease-out, ease),
+    transform    var(--dur-fast, .12s) var(--ease-out, ease),
+    color        var(--dur-fast, .12s) var(--ease-out, ease);
+}
+
+.footbar__chip:focus-visible {
+  outline: 2px solid var(--c-focus-ring, var(--chip-c));
+  outline-offset: 2px;
+}
+
+/* hover: slight lift + domain colour highlighted */
+.footbar__chip:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: color-mix(in srgb, var(--chip-c) 20%, transparent);
+  border-color: color-mix(in srgb, var(--chip-c) 70%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--chip-c) 35%, transparent);
+}
+
+/* active state (filter on): chip lit in the domain colour */
+.footbar__chip.is-active,
+.footbar__chip[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--chip-c) 28%, transparent);
+  border-color: var(--chip-c);
+  color: var(--c-text, #e8eaf6);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--chip-c) 50%, transparent),
+    inset 0 0 8px color-mix(in srgb, var(--chip-c) 18%, transparent);
+}
+
+.footbar__chip.is-active:hover,
+.footbar__chip[aria-pressed="true"]:hover {
+  background: color-mix(in srgb, var(--chip-c) 38%, transparent);
+  box-shadow:
+    0 0 22px color-mix(in srgb, var(--chip-c) 65%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--chip-c) 24%, transparent);
+}
+
+/* ---------- pulsante Reset (appare solo con un filtro attivo) ------------- */
+
+.footbar__reset {
+  display: none;              /* off: no button and no gap in the flex */
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid color-mix(in srgb, var(--c-text, #e8eaf6) 26%, transparent);
+  background: color-mix(in srgb, var(--c-text, #e8eaf6) 6%, transparent);
+  color: var(--c-text-dim, #aab);
+  font-weight: 500;
+  transition:
+    background   var(--dur-fast, .12s) var(--ease-out, ease),
+    border-color var(--dur-fast, .12s) var(--ease-out, ease),
+    color        var(--dur-fast, .12s) var(--ease-out, ease),
+    transform    var(--dur-fast, .12s) var(--ease-out, ease);
+}
+
+/* visible when at least one expskill is active (toggled by syncPressed) */
+.footbar__reset.is-on {
+  display: inline-flex;
+  animation: footbar-reset-in .18s var(--ease-out, ease) both;
+}
+
+.footbar__reset:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: color-mix(in srgb, var(--c-text, #e8eaf6) 12%, transparent);
+  border-color: color-mix(in srgb, var(--c-text, #e8eaf6) 45%, transparent);
+  color: var(--c-text, #e8eaf6);
+}
+
+.footbar__reset:focus-visible {
+  outline: 2px solid var(--c-focus-ring, var(--c-accent-1, #b48ee8));
+  outline-offset: 2px;
+}
+
+.footbar__reset-glyph { font-size: 1.05em; line-height: 1; }
+
+/* ---------- Apply button (only at L0, when a filter is active) ------------ */
+/* It is the accent-lit call-to-action: turns the dimmed preview into the
+   result (exits L0 → non-matching cards are removed → L1). */
+.footbar__apply {
+  display: none;              /* visible only at L0 + is-on, see below */
+  padding: 6px 16px;
+  border: 1px solid color-mix(in srgb, var(--c-accent-1, #b48ee8) 70%, transparent);
+  background: color-mix(in srgb, var(--c-accent-1, #b48ee8) 30%, transparent);
+  color: var(--c-text, #e8eaf6);
+  font-weight: 600;
+  letter-spacing: .01em;
+  transition:
+    background   var(--dur-fast, .12s) var(--ease-out, ease),
+    border-color var(--dur-fast, .12s) var(--ease-out, ease),
+    box-shadow   var(--dur-base, .22s) var(--ease-out, ease),
+    transform    var(--dur-fast, .12s) var(--ease-out, ease);
+}
+/* shown ONLY in L0 selection mode (and when there is a filter to apply) */
+body.exp-l0 .footbar__apply.is-on {
+  display: inline-flex;
+  animation: footbar-reset-in .18s var(--ease-out, ease) both;
+}
+.footbar__apply:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: color-mix(in srgb, var(--c-accent-1, #b48ee8) 45%, transparent);
+  border-color: var(--c-accent-1, #b48ee8);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--c-accent-1, #b48ee8) 45%, transparent);
+}
+.footbar__apply:focus-visible {
+  outline: 2px solid var(--c-focus-ring, var(--c-accent-1, #b48ee8));
+  outline-offset: 2px;
+}
+
+@keyframes footbar-reset-in {
+  from { opacity: 0; transform: scale(.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- cross-lighting skill ↔ experience ---------------------------- */
+/* hover on a chip → experiences with that skill LIGHT UP (glow in the domain
+   colour, --lit-c) and the others DIM; hover on a card → the "sibling" chips
+   light up. All transient (temporary classes set by JS).
+   The smooth transition lives on .exp-card (see main.css). */
+/* Note: the #experience prefix is needed to beat `#experience.exp-glass-on
+   .exp-card { box-shadow:none; border-color:transparent }` (WebGL glass active),
+   which would otherwise zero out the glow. */
+#experience .exp-card.exp-skill-lit {
+  --lit-c: var(--c-accent-1, #b48ee8);
+  position: relative;
+  z-index: 2;
+  border-color: color-mix(in srgb, var(--lit-c) 80%, transparent);
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--lit-c) 88%, transparent),
+    0 0 24px 2px color-mix(in srgb, var(--lit-c) 58%, transparent),
+    0 14px 52px -10px color-mix(in srgb, var(--lit-c) 62%, transparent);
+}
+#experience .exp-card.exp-skill-dim {
+  opacity: .38;
+  filter: saturate(.6);
+}
+
+/* "sibling" chip lit when the cursor is on an experience that includes it */
+.footbar__chip.is-sibling {
+  background: color-mix(in srgb, var(--chip-c) 22%, transparent);
+  border-color: color-mix(in srgb, var(--chip-c) 78%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--chip-c) 48%, transparent);
+}
+
+/* ---------- reduced motion ------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .footbar,
+  .footbar__chip,
+  .footbar__reset {
+    transition: none;
+  }
+  .footbar__reset.is-on { animation: none; }
+  /* the bar stays visible without a slide (opacity handled by the selector above) */
+  body.scene-nav[data-scene="experience"] .footbar {
+    /* keep opacity but zero out the transform-based slide */
+    transition: opacity var(--dur-fast, .12s) linear;
+  }
+}

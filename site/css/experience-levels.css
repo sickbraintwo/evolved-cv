@@ -1,0 +1,120 @@
+/**
+ * experience-levels.css — Styles for L0 level (card-selection mode).
+ *
+ * ALL content is scoped under body.exp-l0 so it NEVER touches
+ * the default L1 view. When the class is absent, this file
+ * has no effect on the layout or appearance of the cards.
+ *
+ * L0: 8 compact cards in a 4×2 grid (4 columns, 2 rows), only
+ * the header visible (company + role). Hook, pills and detail hidden.
+ */
+
+/* ------------------------------------------------------------------ griglia L0 */
+
+body.exp-l0 #experience .experience-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3, 12px);
+  align-content: start;
+}
+
+/* DESKTOP (footbar hover) only: centre the compact 4×2 grid vertically in the
+   open band between header and footbar, and fill the section so #education can't
+   peek above the fixed footbar. Scoped to body.scene-nav + min-width:768px so the
+   MOBILE filter L0 (body.mode-filter, ≤767px, tuned by hand) is left exactly as is.
+   CSS-only on purpose: the JS scroll-anchor choreography is NOT touched. */
+@media (min-width: 768px) {
+  body.scene-nav.exp-l0 #experience {
+    min-height: 100vh;                 /* push #education below the fold */
+  }
+  body.scene-nav.exp-l0 #experience .experience-grid {
+    align-content: center;             /* centre the 2 card rows vertically… */
+    min-height: calc(100vh - 260px);   /* …in a box spanning header+title (~160px top)
+                                          down to the footbar peek (~100px bottom).
+                                          Nudge the 260px if the cards sit high/low. */
+  }
+}
+
+/* MOBILE: 4 compact columns are unreadable at phone widths — use 2. The L0 cards
+   then sit in the 2/3 above the bottom filter panel (filter-overlay.css). */
+@media (max-width: 767px) {
+  body.exp-l0 #experience .experience-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2, 8px);
+  }
+
+  /* L0 cards run VERY compact on mobile: only the company name, centred, so all 8
+     fit and the dim-non-matching preview is readable at a glance. Role/period and
+     location are hidden (hook/pills/detail are already hidden by the rules above). */
+  body.exp-l0 #experience .exp-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-2, 8px);
+  }
+  body.exp-l0 #experience .exp-card .company-card__location,
+  body.exp-l0 #experience .exp-card .role__head {
+    display: none !important;
+  }
+  body.exp-l0 #experience .exp-card .company-card__name {
+    font-size: var(--fs-1);
+    line-height: 1.15;
+    /* clamp long names to 2 lines so one card can't balloon the row height */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ------------------------------------------------------------------ card compatta */
+
+body.exp-l0 #experience .exp-card {
+  min-height: 0;
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  cursor: default;
+}
+
+/* Hides extra content: role hook, skill pills, detail */
+body.exp-l0 #experience .exp-card .role__hook {
+  display: none !important;
+}
+
+body.exp-l0 #experience .exp-card .tag-pills {
+  display: none !important;
+}
+
+body.exp-l0 #experience .exp-card .exp-card__detail {
+  display: none !important;
+}
+
+/* In L0 no card is expanded: overrides .is-expanded if the class somehow
+   survives the toggle (it shouldn't, but an extra safeguard) */
+body.exp-l0 #experience .exp-card.is-expanded {
+  flex-basis: auto;
+  width: auto;
+}
+
+/* Text slightly reduced to fit comfortably in the 4 columns (real classes:
+   .company-card__name = company, .role__title = role, .role__period = period) */
+body.exp-l0 #experience .exp-card .company-card__name { font-size: 0.9em; }
+body.exp-l0 #experience .exp-card .role__title       { font-size: 0.85em; }
+body.exp-l0 #experience .exp-card .role__period      { font-size: 0.8em; }
+
+/* PREVIEW = RESULT: at L0 the filter does NOT remove cards — it shows them all
+   (so the user can refine) and DIMS the non-matching ones. On L0 exit
+   `.is-hidden` reverts to `display:none` (main.css) = real removal → L1. */
+body.exp-l0 #experience .exp-card.is-hidden {
+  display: flex !important;     /* overrides the filter's display:none while at L0 */
+  opacity: 0.3;
+  filter: saturate(0.55);
+  pointer-events: none;
+}
+
+/* Prevents the card CSS transitions from fighting the Flip
+   (already handled by .is-flipping in card-expand.js, but reinforced here
+   for the case where only experience-levels uses the Flip) */
+body.exp-l0 #experience .experience-grid.is-flipping .exp-card {
+  transition: none !important;
+}

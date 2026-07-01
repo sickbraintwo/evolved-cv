@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EvolvedCV — Christina Debug · Computational Biologist & Digital Health Researcher</title>
+  <meta name="description" content="Interactive CV of Christina Debug — Computational Biologist & Digital Health Researcher." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:title" content="EvolvedCV — Christina Debug" />
+  <meta property="og:description" content="Computational Biologist & Digital Health Researcher. An interactive, filterable CV: pick the skills, watch the CV reshape itself." />
+  <meta property="og:image" content="assets/og-image.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="EvolvedCV — Christina Debug" />
+  <meta name="twitter:description" content="Computational Biologist & Digital Health Researcher. An interactive, filterable CV." />
+  <meta name="twitter:image" content="assets/og-image.svg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/loader.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/filter-overlay.css" />
+  <link rel="stylesheet" href="css/footbar.css" />
+  <link rel="stylesheet" href="css/experience-levels.css" />
+  <link rel="stylesheet" href="css/print.css" media="print" />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Christina Debug",
+    "jobTitle": "Computational Biologist & Digital Health Researcher",
+    "email": "mailto:christina.debug@example.com",
+    "address": { "@type": "PostalAddress", "addressLocality": "Berlin", "addressCountry": "DE" },
+    "sameAs": [
+      "https://www.linkedin.com/in/evolvedcv-demo",
+      "https://github.com/evolvedcv-demo"
+    ]
+  }
+  </script>
+
+  <!-- Three.js importmap (pinned). Loaded by js/scene.js in round 2. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- GSAP (classic scripts, pinned) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+
+  <!-- Data (classic scripts BEFORE modules) then app. cv_data.js = textual
+       content, cv_ui.js = non-textual settings; both are file:// fallbacks for
+       the cv_data.json / cv_ui.json fetch. -->
+  <script src="data/cv_data.js"></script>
+  <script src="data/cv_ui.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <!-- Block 1: mini-loader overlay. In the DOM from first paint so there is
+       NEVER a flash of unstyled hero text. JS (main.js) fades this out once
+       fonts + Three.js ctx + name-targets are all ready, then calls
+       deflagration.play(). Falls back (fades out after timeout) if WebGL or
+       GSAP are unavailable. -->
+  <div id="page-loader" role="status" aria-live="polite">
+    <div class="loader__mark">
+      <span class="loader__glyph" aria-hidden="true">◈</span>
+    </div>
+    <span class="loader__sr">Loading</span>
+  </div>
+
+  <a id="skip-link" class="skip-link" href="#main">Skip to content</a>
+
+  <!-- 3D background canvas (round 2) -->
+  <canvas id="bg3d" aria-hidden="true"></canvas>
+
+  <!-- Liquid-glass refraction filter. Used by .exp-card / .project as
+       backdrop-filter: url(#liquid-glass) — it DISPLACES the real backdrop
+       (the live #bg3d particle field behind the card) with fractal noise, so
+       the glass actually refracts/distorts the particles instead of merely
+       blurring them. Chromium/Edge render the url() reference; browsers that
+       don't fall back to the plain blur() declared just before it. -->
+  <svg class="glass-defs" aria-hidden="true" width="0" height="0"
+       style="position:absolute;pointer-events:none">
+    <filter id="liquid-glass" x="-20%" y="-20%" width="140%" height="140%"
+            color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009 0.013"
+                    numOctaves="2" seed="11" result="noise" />
+      <feGaussianBlur in="noise" stdDeviation="1.6" result="soft" />
+      <feDisplacementMap in="SourceGraphic" in2="soft" scale="38"
+                         xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <!-- "Goo"/metaball filter for the scene-dot nav: blur then crush the alpha
+         back to a hard edge, so two nearby ink blobs fuse with a liquid neck
+         (the dot-to-dot "reverse mitosis"). feComposite keeps the original
+         crisp shapes on top so the fill colour stays solid. -->
+    <filter id="dot-goo" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+      <feColorMatrix in="blur" mode="matrix"
+                     values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                     result="goo" />
+      <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+    </filter>
+  </svg>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="brand"><span class="brand__full">EvolvedCV</span><span class="brand__abbr">ECV</span><span class="brand__sep"><span class="brand__sep-em"> — </span><span class="brand__sep-hy"> - </span></span><span class="brand__name">Christina Debug</span></span>
+      <div class="header-actions">
+        <button id="lang-toggle" type="button" class="lang-switch" data-lang="en" aria-label="Language — current: English">
+          <span class="lang-switch__track" aria-hidden="true">
+            <span class="lang-switch__knob"></span>
+            <span class="lang-switch__opt lang-switch__opt--en">EN</span>
+            <span class="lang-switch__opt lang-switch__opt--it">IT</span>
+          </span>
+        </button>
+        <button id="pdf-button" type="button" class="header-btn header-btn--accent" aria-label="Print or save as PDF">PDF</button>
+      </div>
+    </div>
+    <!-- second sticky bar: live headline + counters, revealed on scroll -->
+    <div class="site-subbar" aria-hidden="true">
+      <div class="site-subbar__inner">
+        <span id="subbar-headline" class="site-subbar__headline"></span>
+        <span class="counters js-counters site-subbar__counters"></span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section id="hero" class="section section--hero"></section>
+    <section id="about" class="section"></section>
+    <section id="expertise" class="section"></section>
+    <section id="experience" class="section"></section>
+    <section id="education" class="section"></section>
+    <section id="contact" class="section"></section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Christina Debug — built as data: edit <code>cv_data.json</code>, the site follows.</p>
+  </footer>
+
+  <noscript>
+    <div class="noscript">
+      <h1>Christina Debug — Computational Biologist &amp; Digital Health Researcher</h1>
+      <p>Berlin, Germany · Computational biology, digital health research, data-driven interactive media.</p>
+      <p>Contact: <a href="mailto:christina.debug@example.com">christina.debug@example.com</a> · <a href="https://www.linkedin.com/in/evolvedcv-demo">LinkedIn</a> · <a href="https://github.com/evolvedcv-demo">GitHub</a></p>
+      <p>This interactive CV requires JavaScript.</p>
+    </div>
+  </noscript>
+
+</body>
+</html>

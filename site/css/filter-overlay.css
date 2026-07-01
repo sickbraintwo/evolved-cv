@@ -1,0 +1,649 @@
+/* ==========================================================================
+   filter-overlay.css — FAB + live filter menu (panel under the FAB; bottom
+   sheet on mobile). Colors ONLY via tokens (var(--*)) — zero hex (tokens.css).
+
+   Filter mode does NOT cover or blur the CV: the menu floats over a corner and
+   the cards reflow live beside it.
+   z-index map: 50 header  70 .filter-overlay menu  80 .filter-fab (toggle)
+   ========================================================================== */
+
+/* ---------- FAB ----------------------------------------------------------- */
+
+.filter-fab {
+  position: fixed;
+  right: var(--space-4);
+  top: calc(var(--bar1-h, 58px) + var(--space-2));
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 12px 20px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--c-surface) 88%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--c-text);
+  font-family: var(--font-heading);
+  font-size: var(--fs-2);
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--c-bg) 70%, transparent),
+              0 0 0 1px var(--c-border);
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              opacity var(--dur-base) var(--ease-out) .45s,
+              visibility 0s linear .45s;
+}
+
+/* The desktop footbar (js/footbar.js, ≥768px) fully replaces the Filter FAB:
+   hide the FAB and its menu on desktop. The FAB stays on MOBILE (<768px, shown
+   via body.in-experience below) until the mobile build gets its own filter UI.
+   `display:none !important` wins over any opacity/visibility show rule. */
+@media (min-width: 768px) {
+  .filter-fab,
+  .filter-overlay { display: none !important; }
+}
+
+/* periodic shimmer ring (~every 7s) to attract attention to Filters */
+@property --fab-a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.filter-fab::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-pill);
+  padding: 2px;
+  background: conic-gradient(
+    from var(--fab-a),
+    transparent 0turn,
+    transparent .68turn,
+    var(--c-accent-1) .8turn,
+    var(--c-accent-2) .87turn,
+    transparent .96turn
+  );
+  -webkit-mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  animation: fab-shimmer 7s linear infinite 2.5s;
+}
+
+@keyframes fab-shimmer {
+  0%, 76% { opacity: 0; --fab-a: 0deg; }
+  79% { opacity: 1; }
+  90% { opacity: 1; }
+  94% { opacity: 0; --fab-a: 720deg; }
+  100% { opacity: 0; --fab-a: 720deg; }
+}
+
+/* Slow psychedelic colour drift for the mobile "Filters" button (below). */
+@keyframes filter-psy { to { background-position: 300% 50%; } }
+
+.filter-fab:hover {
+  transform: translateY(-2px);
+  border-color: var(--ui-filter-border-hover);
+  box-shadow: 0 6px 28px var(--c-glow);
+}
+
+.filter-fab:focus-visible {
+  outline: 2px solid var(--c-focus-ring);
+  outline-offset: 3px;
+}
+
+.filter-fab__icon {
+  display: inline-block;
+  color: var(--c-accent-1);
+  font-size: var(--fs-3);
+  line-height: 1;
+  transition: transform var(--dur-slow) var(--ease-inout), color var(--dur-base) var(--ease-out);
+}
+
+.filter-fab.is-open .filter-fab__icon {
+  transform: rotate(135deg);
+  color: var(--c-accent-3);
+}
+
+.filter-fab.is-open {
+  border-color: color-mix(in srgb, var(--c-accent-3) 55%, transparent);
+}
+
+/* active-filter count badge */
+.filter-fab__badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--c-accent-1);
+  color: var(--c-bg);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 12px var(--c-glow);
+}
+
+.filter-fab__badge[hidden] { display: none; }
+
+/* ---------- overlay shell ------------------------------------------------- */
+
+.filter-overlay {
+  position: fixed;
+  top: calc(var(--bar1-h, 58px) + var(--space-2) + 54px); /* just under the FAB */
+  right: var(--space-4);
+  bottom: var(--space-4); /* fill the height, minimal padding to page bottom */
+  z-index: 70;
+  width: min(420px, calc(100vw - var(--space-4) * 2));
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--c-bg-elevated) 95%, transparent);
+  border: 2px solid color-mix(in srgb, var(--c-text) 22%, var(--c-border));
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 70px color-mix(in srgb, var(--c-bg) 82%, transparent),
+              0 0 0 1px var(--c-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+
+.filter-overlay[hidden] {
+  display: none;
+}
+
+.filter-overlay__top,
+.filter-overlay__bottom {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  flex: 0 0 auto;
+}
+
+.filter-overlay__top {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.filter-overlay__bottom {
+  border-top: 1px solid var(--c-border);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* ---------- top bar: live readout ----------------------------------------- */
+
+.filter-live {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.filter-headline {
+  font-family: var(--font-heading);
+  font-size: var(--fs-3);
+  font-weight: 700;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-counters {
+  font-size: var(--fs-1);
+  color: var(--c-accent-1);
+  letter-spacing: .04em;
+}
+
+/* ---------- buttons -------------------------------------------------------- */
+
+.filter-btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  font-family: var(--font-heading);
+  font-size: var(--fs-2);
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out),
+              background var(--dur-base) var(--ease-out);
+}
+
+.filter-btn:focus-visible {
+  outline: 2px solid var(--c-focus-ring);
+  outline-offset: 2px;
+}
+
+.filter-btn--ghost {
+  background: transparent;
+  color: var(--c-text-dim);
+}
+
+.filter-btn--ghost:hover {
+  color: var(--c-text);
+  background: var(--c-surface-hover);
+}
+
+.filter-btn--primary {
+  background: var(--c-accent-1);
+  border-color: transparent;
+  color: var(--c-bg);
+  font-weight: 700;
+  box-shadow: 0 0 20px var(--c-glow);
+}
+
+.filter-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 32px var(--c-glow);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- active chips (bottom) + fallback panel chips ------------------ */
+
+.filter-active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 38px;
+}
+
+.filter-active-chips__empty {
+  color: var(--c-text-faint);
+  font-size: var(--fs-1);
+}
+
+.filter-active-chip {
+  --chip-c: var(--c-accent-1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--chip-c) 55%, transparent);
+  background: color-mix(in srgb, var(--chip-c) 12%, transparent);
+  color: var(--c-text);
+  font-size: var(--fs-1);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out);
+}
+
+.filter-active-chip:hover {
+  background: color-mix(in srgb, var(--chip-c) 24%, transparent);
+}
+
+.filter-active-chip:focus-visible {
+  outline: 2px solid var(--c-focus-ring);
+  outline-offset: 2px;
+}
+
+.filter-active-chip.is-active,
+.filter-active-chip[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--chip-c) 30%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--chip-c) 45%, transparent);
+  border-color: var(--chip-c);
+}
+
+/* ---------- chip menu (per-domain rounded tag buttons) -------------------- */
+
+.filter-chip-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.filter-chip-panel[hidden] {
+  display: none;
+}
+
+.filter-chip-panel__group {
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--chip-c, var(--c-accent-1));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--c-surface) 80%, transparent);
+  padding: var(--space-3);
+}
+
+.filter-chip-panel__title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-heading);
+  font-size: var(--fs-3);
+  color: var(--chip-c, var(--c-text));
+}
+
+.filter-chip-panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Hover effect MOVED here from the (now non-interactive) tag-pills: the menu
+   chip ignites in its domain colour — glow ring + lift + brighter fill. */
+.filter-chip-panel__chips .filter-active-chip {
+  transition:
+    transform    var(--dur-fast) var(--ease-out),
+    background   var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow   var(--dur-base) var(--ease-out);
+}
+.filter-chip-panel__chips .filter-active-chip:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: color-mix(in srgb, var(--chip-c) 28%, transparent);
+  border-color: var(--chip-c);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--chip-c) 55%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--chip-c) 22%, transparent);
+}
+
+/* ---------- domain drill: domain row → one domain's expskills ------------- */
+
+.filter-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.filter-domain-chip {
+  --chip-c: var(--c-accent-1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--chip-c) 55%, transparent);
+  background: color-mix(in srgb, var(--chip-c) 14%, transparent);
+  color: var(--c-text);
+  font-family: var(--font-heading);
+  font-size: var(--fs-2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out);
+}
+
+.filter-domain-chip:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--chip-c) 22%, transparent);
+  border-color: var(--chip-c);
+}
+
+.filter-domain-chip.has-active {
+  border-color: var(--chip-c);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--chip-c) 40%, transparent);
+}
+
+.filter-domain-chip__badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--chip-c);
+  color: var(--c-bg);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.filter-drill-head {
+  --chip-c: var(--c-accent-1);
+  margin-bottom: var(--space-2);
+}
+
+.filter-drill-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--chip-c) 55%, transparent);
+  background: color-mix(in srgb, var(--chip-c) 12%, transparent);
+  color: var(--chip-c);
+  font-family: var(--font-heading);
+  font-size: var(--fs-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-drill-back span { font-size: 1.4em; line-height: 0; }
+
+.filter-drill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* dead-end expskill — selecting it would zero the results: greyed + inert. */
+.filter-active-chip.is-dead {
+  opacity: 0.3;
+  filter: grayscale(0.7);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---------- responsive: bottom sheet on mobile ---------------------------- */
+
+@media (max-width: 767px) {
+  /* While the full-page overlay is open, FREEZE the page behind it so a touch on
+     the overlay can't pan / rubber-band the document (esp. the left-right drift a
+     circular finger caused). Mobile only — desktop keeps the floating panel + live
+     card reflow, so its page must stay scrollable. */
+  /* The panel now covers only the bottom ~1/3; the compressed (L0) Experiences
+     stay visible (and scrollable) in the 2/3 above, so DON'T freeze the page —
+     just keep the panel's own scroll from chaining to the document. */
+  body.mode-filter .filter-overlay,
+  body.mode-filter .filter-chip-panel {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+
+  /* Bottom panel ≈ 1/3 of the VISIBLE viewport. dvh tracks the address bar, so the
+     split adapts as it shows/hides. The L0 Experiences sit in the 2/3 above. The
+     panel is a sheet: edge-to-edge with rounded TOP corners. (Fase 1 shell — the
+     exact fraction/feel is tuned on-device in Fase 5.) */
+  .filter-overlay {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    /* lvh (large viewport, address-bar HIDDEN) is static — unlike dvh it does NOT
+       shrink when the bar reappears, so the panel keeps its size. JS then pins an
+       exact px height on open (fitMobilePanel). */
+    height: 38lvh;
+    max-height: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  /* No title bar inside the panel. The close ✕ FLOATS top-right and stays put no
+     matter how the content evolves; the live readout (headline + counter) is gone
+     on mobile — the L0 preview above is the feedback. */
+  .filter-overlay__top {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: auto;
+    padding: var(--space-2);
+    border-bottom: 0;
+    background: transparent;
+    z-index: 3;
+  }
+
+  .filter-live { display: none; }
+
+  /* Compact, fixed-size ✕ so its footprint is known and the content can reserve
+     exactly its space (no wide text-button tucking chips under its left edge). */
+  #filter-close {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: var(--fs-3);
+    line-height: 1;
+  }
+
+  /* The domain (Exp) chips start at the very TOP, on the X's level — the right
+     padding reserves the ✕'s full footprint (8 inset + 40 button + gap) so nothing
+     ever lands under it; everything else reflows into the remaining width. */
+  .filter-chip-panel {
+    padding: var(--space-2);
+    padding-right: 56px;
+    gap: var(--space-2);
+  }
+
+  .filter-overlay__bottom { padding: var(--space-2) var(--space-3); }
+
+  /* The active-filters + Reset bar shows ONLY once at least one expskill is on. */
+  .filter-overlay:not(.has-filters) .filter-overlay__bottom {
+    display: none;
+  }
+
+  .filter-chip-panel__group { padding: var(--space-2); }
+
+  .filter-chip-panel__title {
+    font-size: var(--fs-2);
+    margin-bottom: var(--space-1);
+  }
+
+  .filter-chip-panel__chips { gap: 6px; }
+
+  .filter-chip-panel .filter-active-chip { padding: 4px 10px; }
+
+  .filter-fab {
+    padding: 13px 30px;   /* a bit wider (req) */
+    /* Psychedelic, slowly-drifting multicolour background — built from the
+       ACCENT hues (electric purple / cyan / pink) rather than the pastel domain
+       palette, which washed out even at full strength. Seamless loop: the first
+       and last stops match so the drift never jumps. Accents are already vivid,
+       so only a light saturate/brighten and no backdrop blur. */
+    background: linear-gradient(100deg,
+      var(--c-accent-1),
+      var(--c-accent-2),
+      var(--c-accent-3),
+      var(--c-accent-2),
+      var(--c-accent-1));
+    background-size: 300% 100%;
+    animation: filter-psy 16s linear infinite;
+    filter: saturate(1.15) brightness(1.04);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .filter-fab__label {
+    display: inline;   /* show "Filters" — the labelled, self-explaining entry */
+    /* soft dark backing so the label stays readable over the full-colour drift */
+    text-shadow: 0 1px 4px color-mix(in srgb, var(--c-bg) 75%, transparent);
+  }
+
+  /* white halo behind the ◈ so it doesn't dissolve into the full-colour bg */
+  .filter-fab__icon {
+    text-shadow: 0 0 9px white, 0 0 4px white;
+  }
+
+  /* Bottom-centred "Filters" button (replaces the old center-right FAB): a clear,
+     self-explaining entry point, with the active-count badge reading "Filters ②". */
+  .filter-fab {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+  }
+  /* keep the horizontal centring through the base :hover lift (touch can latch
+     :hover, which would otherwise drop the translateX and jump the button left). */
+  .filter-fab:hover {
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  /* Part A: hidden by default; shown only while #experience is in view
+     (body.in-experience toggled by IntersectionObserver in main.js).
+     Placed late + high-specificity so it wins over the has-orbit / scene-nav
+     desktop rules (those classes are never set on mobile). */
+  .filter-fab {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease;
+  }
+
+  body.in-experience .filter-fab {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* CHANGE 2 — hide the FAB while the overlay is open (it has its own × close).
+     .is-open is added by filter-scene.js enterFilterMode() → fab.classList.add.
+     body.in-experience .filter-fab has specificity (0,2,0); use (0,2,0)+.is-open
+     = (0,3,0) to guarantee this wins. */
+  body.in-experience .filter-fab.is-open {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .15s ease;
+  }
+}
+
+/* Extra compaction for very short phones (≤680px tall, e.g. 360×640).
+   Panel was 48 px over budget at 640 — drop group/chip padding one notch. */
+@media (max-width: 767px) and (max-height: 680px) {
+  .filter-chip-panel {
+    padding: var(--space-1);  /* 4px instead of 8px */
+    /* keep the ✕'s reserved footprint — the `padding` shorthand above would
+       otherwise reset padding-right and let the top domain chip (e.g. "3D & XR")
+       slide under the close button on short phones / when the address bar shrinks
+       the height below 680px (#3). */
+    padding-right: 56px;
+    gap: var(--space-1);
+  }
+  .filter-chip-panel__group { padding: var(--space-1) var(--space-2); } /* 4px 8px */
+  .filter-chip-panel .filter-active-chip { padding: 3px 8px; }
+  .filter-chip-panel__chips { gap: 4px; }
+  .filter-overlay__top,
+  .filter-overlay__bottom { padding: var(--space-1) var(--space-2); }
+}
+
+/* ---------- reduced motion ------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-fab,
+  .filter-fab__icon,
+  .filter-btn {
+    transition: none;
+  }
+
+  /* no shimmer / no psychedelic drift under reduced motion */
+  .filter-fab { animation: none; }
+  .filter-fab::after {
+    animation: none;
+    opacity: 0;
+  }
+}

@@ -1,0 +1,149 @@
+/* ==========================================================================
+   tokens.css — SINGLE source of truth for colors, spacing, type, motion.
+   No other CSS/JS file may contain a hex color. JS reads tokens via
+   getComputedStyle (see js/theme.js).
+   ========================================================================== */
+
+:root {
+  /* ============================================================
+     PALETTE — "ULTRAVIOLET NOIR" (proposals/restyle-a.html)
+     Deep blue-violet black · one surgical electric accent.
+     NOTE: --c-bg, --c-text, --c-accent-1/2, --c-particle-hot and
+     every --c-domain-* are ALSO injected at runtime by js/theme.js
+     from cv_data.json (site_config.theme + tag_taxonomy domains).
+     The values here are the first-paint defaults and must be kept
+     in sync with cv_data.json.
+     ============================================================ */
+
+  /* ---- Color: core surfaces ---- */
+  --c-bg: #0A0814;
+  --c-bg-elevated: color-mix(in srgb, var(--c-bg) 90%, var(--c-accent-1));
+  --c-surface: color-mix(in srgb, var(--c-bg) 84%, var(--c-accent-1));
+  --c-surface-hover: color-mix(in srgb, var(--c-bg) 78%, var(--c-accent-1));
+  --c-surface-deep: #0E0D12; /* near-black grey — sunken fields (Contact inputs/socials) */
+  --c-border: color-mix(in srgb, var(--c-accent-1) 16%, transparent);
+
+  /* ---- Color: text ---- */
+  --c-text: #F2F0FB;
+  --c-text-dim: #A59EC9;
+  --c-text-faint: #8B83B2; /* >=4.5:1 on --c-bg (a11y pass) */
+
+  /* ---- Color: accents ---- */
+  --c-accent-1: #A06BFF; /* electric ultraviolet — the surgical accent */
+  --c-accent-2: #79E8FF; /* ice glint — secondary, used in gradients */
+  --c-accent-3: color-mix(in srgb, var(--c-accent-2) 65%, white 25%); /* derived tertiary — a pale highlight of the accents, so it follows the theme (no hardcoded hue) */
+
+  /* ---- Color: signal (Contact "Send" traffic-light: stop / warning / go) ---- */
+  --c-signal-red: #FF5C6C;   /* blurred label */
+  --c-signal-amber: #FFC861; /* teaser revealed ("What R U waiting for?!") */
+  --c-signal-green: #54E0A0; /* final label ("Send message") */
+
+  /* ---- Color: domain mapping (symbolic — used by chips, pills, glows) ---- */
+  --c-domain-ai: #B794FF;
+  --c-domain-3dxr: #8FA8FF;
+  --c-domain-2dmedia: #E09BFF;
+  --c-domain-dev: #84E6FF;
+  --c-domain-consulting: #7DEBD0;
+
+  /* ---- Color: effects ---- */
+  --c-glow: color-mix(in srgb, var(--c-accent-1) 35%, transparent);
+  --c-particle-base: #2A2347;
+  --c-particle-hot: #A06BFF;
+  --c-focus-ring: color-mix(in srgb, var(--c-accent-1) 65%, transparent);
+
+  /* ---- Color: print ---- */
+  --c-print-text: #111111;
+  --c-print-bg: #FFFFFF;
+  --c-print-muted: #44444E;
+  --c-print-faint: #6A6A74;
+  --c-print-border: #C9C9D2;
+  --c-print-accent: #0A6E8A;
+
+  /* ---- Spacing scale (8px base) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 96px;
+
+  /* ---- Type scale (ratio 1.25, base 16px) ---- */
+  --fs-1: 0.8rem;
+  --fs-2: 1rem;
+  --fs-3: 1.25rem;
+  --fs-4: 1.563rem;
+  --fs-5: 1.953rem;
+  --fs-6: 2.441rem;
+  --fs-7: 3.052rem;
+  --fs-hero: clamp(2.5rem, 11vw, 9rem); /* DOM hero name (no-3D / fallback) */
+
+  --font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ---- Radius ---- */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* ---- Motion ---- */
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --dur-slow: 600ms;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-inout: cubic-bezier(.65, 0, .35, 1);
+
+  /* ============================================================
+     DATA-DRIVEN UI KNOBS — cv_ui.json (ui_elements + experience_typography),
+     injected at runtime by js/theme.js. The defaults below MUST mirror the
+     JSON values so first paint / no-JS fallback look identical.
+     ============================================================ */
+
+  /* ---- ui_elements: single-color knobs for specific chrome ---- */
+  --ui-pdf-border: var(--c-accent-1);
+  --ui-pdf-border-hover: var(--c-accent-1);
+  --ui-pdf-text: var(--c-accent-1);
+  --ui-pdf-text-hover: var(--c-accent-1);
+  --ui-filter-border-hover: color-mix(in srgb, var(--c-accent-1) 60%, transparent);
+  --ui-counter-text: var(--c-accent-1);
+  --ui-counter-text-recalc: var(--c-accent-1);
+  --ui-social-border-hover: var(--c-accent-1);
+  --ui-social-surface-hover: var(--c-surface-hover);
+  --ui-cursor-ring-button: var(--c-accent-1);
+  --ui-cursor-ring-link: var(--c-accent-1);
+
+  /* ---- button base: interior + border (site_config.theme.button_surface/border) ----
+     One knob to unify the chrome buttons (language switch, header buttons).
+     Default = the Contact dark grey so buttons read like the Contact socials. */
+  --ui-button-surface: var(--c-surface-deep);  /* #0E0D12 */
+  --ui-button-border: var(--c-surface-deep);
+
+  /* ---- experience_typography: font / color / size per text role ---- */
+  --exp-company-font: var(--font-heading);
+  --exp-company-color: var(--c-text);
+  --exp-company-size: var(--fs-4);
+  --exp-loc-font: var(--font-mono);
+  --exp-loc-color: var(--c-text-faint);
+  --exp-loc-size: var(--fs-1);
+  --exp-role-font: var(--font-heading);
+  --exp-role-color: var(--c-text);
+  --exp-role-size: var(--fs-3);
+  --exp-date-font: var(--font-mono);
+  --exp-date-color: var(--c-text-faint);
+  --exp-date-size: var(--fs-1);
+  --exp-dur-font: var(--font-mono);
+  --exp-dur-color: var(--c-text-faint);
+  --exp-dur-size: var(--fs-1);
+  --exp-desc-font: var(--font-body);
+  --exp-desc-color: var(--c-text-dim);
+  --exp-desc-size: var(--fs-2);
+  --exp-proj-font: var(--font-heading);
+  --exp-proj-color: var(--c-text);
+  --exp-proj-size: var(--fs-2);
+  --exp-bullet-font: var(--font-body);
+  --exp-bullet-color: var(--c-text-dim);
+  --exp-bullet-size: var(--fs-1);
+}

@@ -1,0 +1,1801 @@
+/* ==========================================================================
+   main.css — layout & components. Mobile-first; breakpoints 768 / 1100px.
+   ALL colors come from css/tokens.css variables — no hex here.
+   ========================================================================== */
+
+/* ---------- base ---------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+/* `overflow-x: clip` (not hidden) guards against TRANSIENT horizontal overflow —
+   notably the intro deflagration, which flings the hero name glyphs outward and
+   briefly pushes one a hair past the right edge: that 1px of scroll width let
+   mobile pinch-zoom-out and made a glyph look like it "drifted off to the right"
+   (#1, 2026-06-25). clip doesn't create a scroll container, so it leaves
+   position:sticky and scroll-behavior untouched. At rest there is no overflow. */
+html { scroll-behavior: smooth; overflow-x: clip; }
+
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-2);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-heading);
+  line-height: 1.15;
+  margin: 0 0 var(--space-3);
+}
+
+a { color: var(--c-accent-1); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: 2px solid var(--c-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- skip link (a11y) ---------- */
+
+.skip-link {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  background: var(--c-surface);
+  color: var(--c-text);
+  border: 1px solid var(--c-accent-1);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-weight: 600;
+  transform: translateY(calc(-100% - var(--space-4)));
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  text-decoration: none;
+}
+
+code {
+  background: var(--c-surface);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- 3D background canvas ---------- */
+
+#bg3d {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ---------- header ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--c-bg) 75%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--c-border);
+}
+
+/* Block 3 — header hidden until show_text phase.
+   Scoped to body.deflagration-active so the fallback (no-3d / reduced-motion /
+   no GSAP) always shows the header normally. The slide-down tween in
+   hero-deflagration.js drives translateY from -100% → 0 directly; we declare
+   the initial hidden state here so it is already off-screen before the first
+   paint of the intro. */
+body.deflagration-active .site-header {
+  transform: translateY(-100%);
+  /* will-change keeps the compositor layer ready for the tween */
+  will-change: transform;
+}
+
+.site-header__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--fs-3);
+  background: linear-gradient(90deg, var(--c-accent-1), var(--c-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+}
+
+/* "— Christina Debug" stays collapsed until the page is scrolled */
+.brand__sep, .brand__name {
+  display: inline-block;
+  color: var(--c-text-dim);
+  -webkit-text-fill-color: var(--c-text-dim);
+  font-weight: 500;
+  max-width: 0;
+  opacity: 0;
+  transform: translateX(-6px);
+  overflow: hidden;
+  white-space: pre;
+  transition: max-width var(--dur-slow) var(--ease-inout),
+              opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+}
+
+body.is-scrolled .brand__sep { max-width: 2ch; opacity: 1; transform: none; }
+body.is-scrolled .brand__name { max-width: min(18ch, 40vw); opacity: 1; transform: none; }
+
+/* Abbreviated brand for mobile-scrolled: "ECV - Christina Debug" */
+.brand__abbr { display: none; }
+.brand__sep-hy { display: none; }
+
+.counters {
+  font-size: var(--fs-1);
+  color: var(--c-text-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.header-actions { display: flex; gap: var(--space-2); margin-left: auto; }
+
+/* ---------- second sticky bar (headline + counters on scroll) ---------- */
+
+.site-subbar {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height var(--dur-slow) var(--ease-inout),
+              opacity var(--dur-slow) var(--ease-out);
+}
+
+body.is-scrolled .site-subbar { max-height: 64px; opacity: 1; }
+
+.site-subbar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 150px var(--space-2) var(--space-3);
+}
+
+.site-subbar__headline {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--fs-2);
+  color: var(--c-text);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-subbar__counters {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--ui-counter-text);
+}
+
+.header-btn {
+  font: inherit;
+  font-size: var(--fs-1);
+  font-weight: 600;
+  color: var(--c-text);
+  background: var(--ui-button-surface);
+  border: 1px solid var(--ui-button-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+/* hover = same as the Contact social buttons (linked, not a separate knob) */
+.header-btn:hover { background: var(--ui-social-surface-hover); border-color: var(--ui-social-border-hover); }
+
+.header-btn--accent {
+  border-color: var(--ui-pdf-border);
+  color: var(--ui-pdf-text);
+}
+
+/* language switch: iPhone-style 2-position toggle showing BOTH EN and IT, with
+   a sliding knob under the active one (driven by [data-lang] from main.js). */
+.lang-switch {
+  font: inherit; font-size: var(--fs-1); font-weight: 600; line-height: 1;
+  padding: 3px; border: 1px solid var(--ui-button-border); border-radius: var(--radius-pill);
+  background: var(--ui-button-surface); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.lang-switch:hover { background: var(--ui-social-surface-hover); border-color: var(--ui-social-border-hover); }
+.lang-switch__track { position: relative; display: inline-flex; }
+.lang-switch__knob {
+  position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(120deg, var(--c-accent-1), var(--c-accent-2));
+  transition: transform var(--dur-base) var(--ease-out);
+  z-index: 0;
+}
+.lang-switch[data-lang="it"] .lang-switch__knob { transform: translateX(100%); }
+.lang-switch__opt {
+  position: relative; z-index: 1; min-width: 2.4em; padding: 4px 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--c-text-dim); transition: color var(--dur-fast) var(--ease-out);
+}
+.lang-switch[data-lang="en"] .lang-switch__opt--en,
+.lang-switch[data-lang="it"] .lang-switch__opt--it { color: var(--c-bg); }
+
+/* ---------- sections ---------- */
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-3) var(--space-8);
+}
+
+/* MOBILE: widen the side gutters so the content boxes are narrower and the
+   Canvas-2D particle layer has visible lanes on both sides to play in (the
+   particles react to the content boxes, so room beside them = visible motion). */
+@media (max-width: 767px) {
+  main { padding-left: var(--space-5); padding-right: var(--space-5); }
+}
+
+/* skip-link target: focusable but no giant outline on the whole page */
+main:focus-visible { outline: none; }
+
+.section { padding: var(--space-7) 0 0; }
+
+.section-title {
+  font-size: var(--fs-5);
+  margin-bottom: var(--space-4);
+  position: relative;
+  padding-left: var(--space-3);
+}
+
+.section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .15em;
+  bottom: .15em;
+  width: 4px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(var(--c-accent-1), var(--c-accent-2));
+}
+
+/* ---------- hero ---------- */
+
+.section--hero {
+  min-height: calc(100svh - 64px);
+  display: flex;
+  align-items: center;
+  padding-top: var(--space-6);
+}
+
+.hero__kicker {
+  color: var(--c-text-dim);
+  font-size: var(--fs-3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-2);
+}
+
+/* Fallback (no WebGL): the particle name never forms, so the DOM hero name is
+   the hero — promote it to the 11vw display treatment. The 3D path adds
+   body.deflagration-active and sr-only's this element instead. */
+.no-3d .hero__kicker {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--fs-hero);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--c-text);
+  margin: 0 0 var(--space-3);
+}
+
+/* Deflagration active: the particle system renders the name; keep the DOM
+   name for screen readers + SEO but hidden visually (NOT display/visibility,
+   so it stays in the accessibility tree and reserves no layout shift risk). */
+body.deflagration-active .hero__kicker {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* MOBILE: the Canvas-2D physics layer (mobile-particles.js, body.mobile-particles-on)
+   IS the name on phones at every tier — so sr-only the DOM name here too, exactly
+   like the deflagration path above, to avoid a second name floating over the
+   particles. Gated on the JS-added class so the static fallback (no 2D layer) still
+   shows the DOM name. */
+@media (max-width: 767px) {
+  body.mobile-particles-on .hero__kicker {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* With the particle name occupying the upper-center band of the hero, drop the
+   DOM hero content (role headline, sub, meta, counters, CTA) into the lower
+   half so the two never collide. Only when the 3D choreography is active. */
+body.deflagration-active .section--hero {
+  align-items: flex-start;
+}
+body.deflagration-active .hero__inner {
+  padding-top: 48vh;
+}
+
+/* Same drop on MOBILE whenever the 2D particle layer owns the name — needed at
+   the LOW tier, where deflagration never activates (so the rule above doesn't
+   fire) yet the particle name still occupies the upper band. Keeps the role
+   headline from colliding with the particle name.
+   18vh (down from 28vh): name band is centred dynamically in the header↔text
+   gap; 18vh keeps the text clear of the gap without pushing it off-screen.
+   section--hero gets min-height: 100svh so the hero fills exactly one screen
+   and About starts on the next (clean cut on phones). */
+@media (max-width: 767px) {
+  body.mobile-particles-on .section--hero { align-items: flex-start; }
+  body.mobile-particles-on .hero__inner { padding-top: 18vh; }
+  .section--hero { min-height: 100svh; }
+}
+
+/* hero text + aside (the step-7 language banner sits to the RIGHT of the text,
+   bottom-aligned so the banner's lower edge matches the counters' lower edge) */
+.hero__inner { display: flex; align-items: flex-end; gap: var(--space-6); }
+.hero__text { flex: 1 1 auto; min-width: 0; }
+.hero__aside { flex: 0 0 auto; }
+
+.hero-lang {
+  display: inline-flex; flex-direction: row; gap: var(--space-2);
+  padding: var(--space-3); border-radius: 16px;
+  background: color-mix(in srgb, var(--c-surface) 82%, transparent);
+  border: 1px solid var(--c-border);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--c-bg) 70%, transparent);
+  will-change: transform, opacity;
+}
+.hero-lang__btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font: inherit; font-family: var(--font-heading); font-weight: 600; font-size: var(--fs-2);
+  padding: 8px 14px; border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border); background: var(--c-surface-deep); color: var(--c-text);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+.hero-lang__btn:hover {
+  /* same as the Contact social buttons (surface + border tokens) */
+  background: var(--ui-social-surface-hover);
+  border-color: var(--ui-social-border-hover);
+}
+.hero-lang__flag { width: 28px; height: auto; display: block; border-radius: 3px; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+.hero-lang__code { letter-spacing: .04em; }
+
+/* mobile: banner drops BELOW the text block */
+@media (max-width: 767px) {
+  .hero__inner { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+  /* CHANGE A: .section--hero is a flex container (align-items:flex-start on mobile),
+     which makes .hero__inner a flex item sized to its intrinsic content (the headline
+     text natural width ~332px), NOT the parent's 326px content box. This causes an
+     asymmetric particle obstacle box (~25px right vs 32px left gap).
+     Fix 1: force .hero__inner to fill its flex parent (= section content width 326px).
+     Fix 2: .hero__text is itself a column-flex item with align-items:flex-start, so it
+     also shrinks to intrinsic width — force it to fill .hero__inner too. */
+  .hero__inner { width: 100%; }
+  .hero__text  { width: 100%; }
+  /* The hero counters line ("26 projects · 19 yrs 11 mo") is .counters → white-space:nowrap.
+     On phones narrower than ~388px it can't fit on one line and its nowrap width overflows
+     ~5px past the viewport → the WHOLE page loads slightly zoomed-in (a pinch zoom-out
+     "fixes" it). Let it wrap on mobile so it never forces horizontal overflow — data-safe,
+     since the counts can grow. */
+  .hero__counters .counters { white-space: normal; }
+}
+
+.hero__headline {
+  font-size: var(--fs-6);
+  margin: 0 0 var(--space-3);
+  color: var(--c-text);
+  /* whole-word wrapping: a word never splits across lines, never hyphenates */
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* Headline is solid white (no gradient). When split into glyphs the children
+   need the fill re-applied explicitly so each character stays pure white. */
+.hero__headline .glyph {
+  -webkit-text-fill-color: var(--c-text);
+  color: var(--c-text);
+}
+
+.hero__sub { color: var(--c-text-dim); font-size: var(--fs-3); margin: 0 0 var(--space-2); }
+.hero__meta { color: var(--c-text-faint); margin: 0 0 var(--space-3); }
+
+/* MOBILE: shrink headline + tighten stack so the full hero fits 100svh−64px.
+   Must come AFTER the base rules above so it wins the cascade. */
+@media (max-width: 767px) {
+  .hero__headline { font-size: clamp(var(--fs-4), 7.5vw, var(--fs-5)); line-height: 1.08; margin-bottom: var(--space-2); }
+  .hero__sub  { margin-bottom: var(--space-1); }
+  .hero__meta { margin-bottom: var(--space-1); }
+}
+
+/* live counters, promoted from the header into the hero */
+.hero__counters {
+  margin: 0; /* last hero line — no bottom margin, so the language banner (flex-end) aligns to it */
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.hero__counters .counters {
+  font-size: clamp(var(--fs-3), 3vw, var(--fs-4));
+  color: var(--ui-counter-text);
+}
+
+/* ---------- about ---------- */
+
+.about__summary {
+  max-width: 70ch;
+  color: var(--c-text-dim);
+  font-size: var(--fs-3);
+  line-height: 1.7;
+}
+
+/* About — words auto-tinted by their Exp colour (editor "About" tab) */
+.about-hl {
+  color: var(--hl);
+  font-weight: 600;
+}
+
+/* User nudge: shift the About text ~2cm to the right (title + paragraph stay
+   aligned). The particle "frame" is centred on the viewport, so this just
+   offsets the text within it. Reset on mobile so it never crowds the screen. */
+#about .section-title,
+#about .about__summary { margin-left: 2cm; }
+@media (max-width: 767px) {
+  #about .section-title,
+  #about .about__summary { margin-left: 0; }
+  /* smaller body + tighter leading to win back vertical space on phones */
+  .about__summary { font-size: var(--fs-2); line-height: 1.5; }
+  /* divide the About block from Expertise below (clear lane / gap) */
+  #about { padding-bottom: var(--space-8); }
+}
+
+/* ---------- cards ---------- */
+
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  transition: background var(--dur-base) var(--ease-out),
+              opacity var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+
+/* ---------- expertise ---------- */
+
+/* Desktop particle halo layer (js/expertise-particles.js): a canvas clipped to
+   the section, BEHIND the cards; the title + grid sit above it so the glowing
+   border particles read in the gaps around the opaque cards. */
+#expertise { position: relative; }
+.expertise-fx { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+#expertise > .section-title,
+#expertise > .expertise-grid { position: relative; z-index: 1; }
+
+.expertise-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+/* 5 cards in a 2-col grid: the last (Creative Consulting) spans both columns
+   so it forms its own full-width third row. On the 1-col mobile layout
+   `1 / -1` is just the single column — no visual change. */
+.expertise-card:last-child {
+  grid-column: 1 / -1;
+}
+
+.expertise-card__title { font-size: var(--fs-3); margin-bottom: var(--space-2); }
+
+.expertise-card__items {
+  color: var(--c-text-dim);
+  font-size: var(--fs-1);
+  margin: 0 0 var(--space-3);
+}
+
+/* Per-family colour: each Expertise card — and each Education card — wears its
+   domain colour as a tinted border + glow + a soft veil at the top. --exp-c is
+   set inline (renderExpertise from the family id; renderEducation from the
+   dominant expertise of its expskills) and falls back to the accent if absent.
+   The veil is a background-IMAGE layer, so it sits over the base .card colour
+   without replacing it. (Glass stays exclusive to Experience — this is light.) */
+.expertise-card,
+.education-card {
+  /* Neutral near-black base (instead of the violet --c-surface) so the domain
+     colour stays vivid and doesn't blend into the violet. */
+  background-color: #070709;
+  border-color: color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 42%, transparent);
+  background-image: linear-gradient(180deg,
+    color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 13%, transparent) 0%,
+    transparent 44%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 16%, transparent),
+    0 14px 42px -20px color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 55%, transparent);
+}
+
+/* ---------- experience grid ---------- */
+
+/* Flexbox grid: justify-content:center ensures that incomplete rows
+   (e.g. the last row of 2 out of 3) remain centred.
+   position:relative is required so that Flip's absolute:true children
+   are anchored to this container instead of the viewport. */
+.experience-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  position: relative;
+}
+
+/* Disable CSS transition on exp-cards while Flip is running so GSAP's
+   matrix-driven transforms are not fought by the 200 ms ease-out. */
+.experience-grid.is-flipping .exp-card {
+  transition: none !important;
+}
+
+/* Mobile default: full width */
+.exp-card {
+  flex: 0 1 100%;
+  /* Let the flex-basis govern the column width: without this, the card is
+     pinned UP to its min-content size, and a nowrap date string in the head
+     (e.g. "Sep 2015 – Dec 2022 · 7 years 4 months") makes that wider than the
+     3-up basis, tipping the row down to 2 cards. */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  /* 3D tilt: smooth follow + smooth return to identity */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: background   var(--dur-base) var(--ease-out),
+              opacity      var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              box-shadow   var(--dur-base) var(--ease-out),
+              filter       var(--dur-base) var(--ease-out),
+              transform    200ms           ease-out;
+
+  /* --- GLASS SLAB (experience cards only) ---
+     A thick, translucent pane that blurs the live #bg3d particle field behind it
+     (real backdrop blur). Lighter/more transparent tint than a flat card + a
+     bevelled edge (bright top/left, dark bottom) so it reads as a glass slab, not
+     a frosted box. --mx is the reflection sweep position (a %), set by
+     card-tilt.js on hover; defaults to centre (visible at rest / touch). */
+  --mx: 50%;
+  position: relative;
+  isolation: isolate;
+  /* Top stop, border and inner glow track --exp-glass-tint-rgb (derived from
+     cv_ui.json → glass.card.attenuationColor by theme.js); the dark mid/bottom
+     stops stay fixed (they read as depth/shadow, not glass colour). Defaults
+     equal the original values, so an absent token keeps the look identical. */
+  background: linear-gradient(155deg,
+    rgba(var(--exp-glass-tint-rgb, 80,70,134),.30) 0%,
+    rgba(34,28,60,.40) 46%, rgba(18,15,34,.50) 100%);
+  border: 1px solid rgba(var(--exp-glass-tint-rgb, 192,180,242),.22);
+  /* corner tied to the WebGL slab radius (cv_ui.json glass.card.radius, injected
+     by theme.js) so the card edge AND the skill-lit glow match the glass. */
+  border-radius: var(--exp-glass-radius, 20px);
+  /* Real refraction of the live #bg3d particle field behind the card.
+     1st declaration = safe blur fallback (every browser). 2nd = liquid-glass:
+     url(#liquid-glass) DISPLACES the backdrop (Chromium/Edge); if a browser
+     can't parse url() in backdrop-filter it ignores this line and keeps the
+     blur above. Lower blur than a frosted box so the particles read THROUGH
+     the glass, distorted, not merely smeared. */
+  -webkit-backdrop-filter: blur(var(--exp-glass-blur, 10px)) saturate(1.6);
+  backdrop-filter: blur(var(--exp-glass-blur, 10px)) saturate(1.6);
+  backdrop-filter: url(#liquid-glass) blur(calc(var(--exp-glass-blur, 10px) * .3)) saturate(1.7) brightness(1.04);
+  box-shadow:
+    0 22px 50px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.38),   /* top bevel highlight */
+    inset 1px 0 0 rgba(255,255,255,.12),   /* left bevel */
+    inset 0 -1px 0 rgba(0,0,0,.38),        /* bottom edge (thickness) */
+    inset 0 0 34px rgba(var(--exp-glass-tint-rgb, 124,112,196),.10);  /* faint inner glow */
+}
+
+/* keep the card content above the glass slab's surface sheen (::before) */
+.exp-card > .exp-card__front,
+.exp-card > .exp-card__detail { position: relative; z-index: 1; }
+
+/* the slab SURFACE: a bright corner where light hits + a soft oblique specular
+   sheen sweeping across, so the pane looks like real glass catching light. */
+.exp-card::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(130% 85% at 16% -8%, rgba(255,255,255,.18), transparent 44%),
+    linear-gradient(152deg, transparent 50%, rgba(255,255,255,.08) 65%,
+                    rgba(255,255,255,.02) 72%, transparent 82%);
+}
+
+/* --- WebGL true-glass active (experience-glass.js) ---
+   The shared #bg3d canvas renders the glass slabs + their refracted particle
+   field as a layer, so the DOM cards/projects go transparent and only their
+   text + reflective plates remain on top. When this class is NOT present
+   (reduced-motion / no WebGL) the CSS liquid-glass above is the fallback. */
+#experience { position: relative; }
+#experience.exp-glass-on .exp-card,
+#experience.exp-glass-on .project {
+  background: none;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+#experience.exp-glass-on .exp-card::before,
+#experience.exp-glass-on .project::before { display: none; }
+#experience.exp-glass-on .section-title,
+#experience.exp-glass-on .experience-grid { position: relative; z-index: 1; }
+
+/* When tilt is being animated by JS, keep the return path smooth.
+   The JS sets will-change on enter and clears it on leave; the CSS
+   declaration below is omitted intentionally so compositor layers are
+   not held permanently for every card. */
+
+/* Hidden detail panel — revealed when card is expanded (Blocco C) */
+.exp-card__detail { display: none; }
+
+/* Clickable affordance */
+.exp-card { cursor: pointer; }
+
+/* Expanded state: card takes full row width */
+.exp-card.is-expanded {
+  flex: 0 1 100% !important;
+}
+
+/* Reveal detail in expanded card.
+   CSS only shows/hides; GSAP drives the fade-in when available.
+   Opacity defaults to 1 so the fallback (no-JS / reduced-motion) is
+   always fully readable. */
+.exp-card.is-expanded .exp-card__detail {
+  display: block;
+  opacity: 1;
+}
+
+/* Company header (classes reused for glyph-assembly compat in scroll-story) */
+.company-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.company-card__name { font-size: var(--fs-4); margin: 0; }
+.company-card__location { color: var(--c-text-faint); margin: 0; font-size: var(--fs-1); }
+
+.role__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+}
+
+.role__title { font-size: var(--fs-3); margin: 0; }
+.role__period { color: var(--c-text-faint); font-size: var(--fs-1); margin: 0; white-space: nowrap; }
+/* Inside the (narrow, 3-up) experience cards the head period must be allowed
+   to wrap, otherwise its nowrap width forces the card past the 3-up basis.
+   In the expanded/full-width card there is room, so it still stays on one line. */
+.exp-card .role__period { white-space: normal; }
+.role__hook { color: var(--c-text-dim); margin: var(--space-2) 0; }
+
+/* MOBILE: tighten the expanded Experience card (req 2026-06-25, mobile only).
+   #experience-scoped (0,1,1) so these win over the .exp-* typography token
+   rules (0,1,0) injected later in this file, regardless of source order. */
+@media (max-width: 767px) {
+  /* 1. description (hook) smaller still */
+  #experience .role__hook { font-size: 0.95rem; line-height: 1.45; }
+
+  /* 2 + 3c. bullets sit flush with the description's left edge — drop the list
+     indent so the text reclaims the wasted left gutter. */
+  #experience .bullets {
+    padding-left: 0;
+    list-style-position: inside;
+  }
+  #experience .bullets li { text-indent: 0; }
+
+  /* 3a. the per-project "box" wasted a lot of width (its own padding + border +
+     glass slab on both sides). On mobile drop the slab for a slim left accent
+     rule, so each project spans the full card width. */
+  /* pull the project block toward the card border — halve the card's 24px left
+     padding (the gap to the accent rule) so projects reclaim more width. */
+  #experience .projects { margin-left: calc(-1 * var(--space-3)); }
+  #experience .project {
+    padding: var(--space-2) 0 var(--space-2) 6px;
+    background: none;
+    border: none;
+    border-left: 2px solid color-mix(in srgb, var(--c-accent-1) 50%, transparent);
+    border-radius: 0;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  #experience .project::before { display: none; }
+
+  /* 3b. stack the project header so the yellow duration can't run off the edge. */
+  #experience .project__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  #experience .project__period { white-space: normal; }
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+/* Each project = a SECOND glass slab nested inside the card's glass: its own
+   refracting backdrop, lighter tint, bevelled edge + thickness shadow, so the
+   expanded card reads as glass-inside-glass (the "double level"). */
+.project {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(155deg,
+    rgba(96,86,150,.22) 0%, rgba(40,33,68,.30) 50%, rgba(20,16,38,.40) 100%);
+  border: 1px solid rgba(192,180,242,.20);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  -webkit-backdrop-filter: blur(8px) saturate(1.5);
+  backdrop-filter: blur(8px) saturate(1.5);
+  backdrop-filter: url(#liquid-glass) blur(2px) saturate(1.6) brightness(1.03);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.30),
+    inset 1px 0 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(0,0,0,.34);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+/* oblique sheen on the inner slab too */
+.project::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 80% at 14% -10%, rgba(255,255,255,.16), transparent 46%),
+    linear-gradient(152deg, transparent 54%, rgba(255,255,255,.07) 66%, transparent 80%);
+}
+.project > * { position: relative; z-index: 1; }
+
+.project__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.project__name { font-size: var(--fs-2); margin: 0; }
+.project__period { color: var(--c-text-faint); font-size: var(--fs-1); margin: 0; white-space: nowrap; flex-shrink: 0; }
+
+.bullets {
+  margin: 0;
+  padding-left: var(--space-4);
+  color: var(--c-text-dim);
+  font-size: var(--fs-1);
+}
+
+.bullets li { margin-bottom: var(--space-1); }
+
+.links { margin: var(--space-2) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-3); font-size: var(--fs-1); }
+
+/* ---------- tag pills ---------- */
+
+.tag-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.pill {
+  font-size: var(--fs-1);
+  line-height: 1.4;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-dim);
+  /* tag pills read as terminal tokens (was a separate block in the restyle section) */
+  font-family: var(--font-mono);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.pill--ai { color: var(--c-domain-ai); border-color: color-mix(in srgb, var(--c-domain-ai) 40%, transparent); }
+.pill--3dxr { color: var(--c-domain-3dxr); border-color: color-mix(in srgb, var(--c-domain-3dxr) 40%, transparent); }
+.pill--2dmedia { color: var(--c-domain-2dmedia); border-color: color-mix(in srgb, var(--c-domain-2dmedia) 40%, transparent); }
+.pill--dev { color: var(--c-domain-dev); border-color: color-mix(in srgb, var(--c-domain-dev) 40%, transparent); }
+.pill--consulting { color: var(--c-domain-consulting); border-color: color-mix(in srgb, var(--c-domain-consulting) 40%, transparent); }
+
+/* Expertise skills react to the cursor: each pill illuminates in its OWN domain
+   colour on hover (currentColor = the pill's domain colour from .pill--*),
+   lifting + glowing. A taste of the footbar's hover-to-light mechanic — these
+   are NOT clickable here. Scoped to Expertise/Education so Experience pills stay
+   untouched. (Education pills are decorative — same hover-to-light, no filter.) */
+.expertise-card .pill,
+.education-card .pill {
+  cursor: default;
+  transition: transform var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+.expertise-card .pill:hover,
+.education-card .pill:hover {
+  transform: translateY(-2px);
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  border-color: currentColor;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, currentColor 35%, transparent),
+    0 6px 18px -6px color-mix(in srgb, currentColor 60%, transparent);
+}
+
+/* ---------- glass reflection (experience cards) ----------
+   A reflective plate behind the job title + a glossy chip behind each tag, with
+   an oblique linear gleam that sits ABOVE the content (real surface reflection)
+   and sweeps with --mx (set by card-tilt). Positions use only +/- on a
+   percentage var — never `var() * %` — so the gradient can never become
+   invalid (that bug once dropped the whole gradient to `none`). */
+.exp-card .role__head {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: linear-gradient(120deg, rgba(48,54,86,.30), rgba(9,7,20,.42));
+}
+.exp-card .role__head::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(116deg,
+    transparent          calc(var(--mx,50%) - 20%),
+    rgba(255,255,255,0)  calc(var(--mx,50%) - 12%),
+    rgba(255,255,255,.70) var(--mx,50%),
+    rgba(255,255,255,0)  calc(var(--mx,50%) + 12%),
+    transparent          calc(var(--mx,50%) + 20%));
+}
+.exp-card .tag-pills .pill {
+  position: relative;
+  overflow: hidden;
+}
+.exp-card .tag-pills .pill::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(116deg,
+    transparent          calc(var(--mx,50%) - 26%),
+    rgba(255,255,255,.55) var(--mx,50%),
+    transparent          calc(var(--mx,50%) + 26%));
+}
+
+/* ---------- filter visibility ---------- */
+
+.is-hidden {
+  opacity: 0;
+  transform: scale(.985);
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+  border-width: 0;
+  pointer-events: none;
+}
+
+/* Experience cards filtered out LEAVE the flex flow entirely, so the surviving
+   cards re-pack into a tidy grid. The reflow + the fade/scale of the leaving
+   and entering cards are animated by GSAP Flip (see ui-renderer.js). The
+   collapse props above are neutralised so that while Flip briefly renders a
+   leaving card (position:absolute) it keeps its real box. */
+.exp-card.is-hidden {
+  display: none;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: var(--space-4) !important;
+  opacity: 1;
+  transform: none;
+  overflow: visible;
+  border-width: 1px;
+  pointer-events: none;
+}
+
+.project, .exp-card { max-height: 4000px; }
+
+/* ---------- education / contact ---------- */
+
+.education-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.education-card__title { font-size: var(--fs-2); margin-bottom: var(--space-1); }
+.education-card__meta { color: var(--c-text-faint); margin: 0; font-size: var(--fs-1); }
+.education-langs { color: var(--c-text-dim); margin-top: var(--space-4); }
+
+.contact-links {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.contact-link {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  color: var(--c-text);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.contact-link:hover { background: var(--c-surface-hover); text-decoration: none; }
+
+.contact-link__label {
+  color: var(--c-text-faint);
+  font-size: var(--fs-1);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  min-width: 88px;
+}
+
+/* ---------- contact: form + social icons ---------- */
+
+/* Centered single column at every width: the form (capped) sits centred with a
+   row of round social icons below it. The right-side space stays clear for the
+   Canvas-2D "WP" initials, which compose bottom-right (particle-shapes.js). */
+.contact-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: 560px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* Email/phone block: only for the printed PDF (css/print.css reveals it). */
+.contact-direct { display: none; }
+@media (max-width: 767px) {
+  /* gap = G (the textarea→Send gap): keeps the under-form spacing rhythm the
+     mobile particle composer expects. */
+  .contact-layout { gap: var(--space-3); }
+}
+
+/* Title shares the form's centred column so their left edges align. */
+#contact .section-title { max-width: 560px; margin-inline: auto; width: 100%; }
+
+.contact-form { display: flex; flex-direction: column; gap: var(--space-3); width: 100%; }
+.contact-form__field { display: flex; flex-direction: column; gap: var(--space-1); }
+.contact-form__field label {
+  font-size: var(--fs-1);
+  color: var(--c-text-dim);
+  letter-spacing: .03em;
+}
+.contact-form input,
+.contact-form textarea {
+  font: inherit;
+  color: var(--c-text);
+  background: var(--c-surface-deep);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.contact-form textarea { resize: vertical; min-height: 96px; }
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--c-accent-1);
+  box-shadow: 0 0 0 3px var(--c-glow);
+}
+/* off-screen honeypot (bots fill it; humans never see it) */
+.contact-form__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+/* Traffic-light submit: --sig is swapped per state (set by wireSubmitTeaser via
+   data-state) so border + fill + hover all derive from one colour.
+   red = blurred label · amber = "What R U waiting for?!" · green = "Send message". */
+.contact-form__submit {
+  --sig: var(--c-accent-1); /* pre-JS / first paint */
+  align-self: flex-start;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--sig);
+  background: color-mix(in srgb, var(--sig) 16%, transparent);
+  color: var(--c-text);
+  transition: background var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+.contact-form__submit[data-state="blurred"] { --sig: var(--c-signal-red); }
+.contact-form__submit[data-state="teaser"]  { --sig: var(--c-signal-amber); }
+.contact-form__submit[data-state="final"]   { --sig: var(--c-signal-green); }
+.contact-form__submit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sig) 30%, transparent);
+  transform: translateY(-1px);
+}
+.contact-form__submit:disabled { opacity: .6; cursor: default; }
+/* "blur teaser" label: starts unreadable, un-blurs on hover (or on a timer on
+   touch). Its own inline-block so only the text blurs, not the whole button. */
+.contact-form__submit-label {
+  display: inline-block;
+  transition: filter var(--dur-base, .35s) var(--ease-out);
+  will-change: filter;
+}
+.contact-form__submit-label.is-blurred { filter: blur(5px); }
+@media (prefers-reduced-motion: reduce) {
+  .contact-form__submit-label { transition: none; }
+  .contact-form__submit-label.is-blurred { filter: none; }
+}
+.contact-form__status { margin: 0; font-size: var(--fs-1); min-height: 1.2em; }
+/* empty (no message yet): collapse to 0 height so it doesn't push the socials
+   down — but stays in the DOM so its aria-live still announces on submit. */
+.contact-form__status:empty { min-height: 0; }
+.contact-form__status.is-error { color: var(--c-accent-3); }
+.contact-form__status.is-pending { color: var(--c-text-dim); }
+.contact-form__status.is-success { color: var(--c-accent-2); font-size: var(--fs-2); }
+/* on success, collapse the inputs and keep only the confirmation message */
+.contact-form.is-sent .contact-form__field,
+.contact-form.is-sent .contact-form__submit { display: none; }
+
+/* A compact, centered ROW of ICON-ONLY round buttons (at every width). The full
+   label stays on the <a> aria-label for screen readers. */
+.contact-socials { display: flex; flex-direction: row; justify-content: center; gap: var(--space-4); }
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  gap: 0;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  background: var(--c-surface-deep);
+  color: var(--c-text);
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.social-link:hover { background: var(--ui-social-surface-hover); border-color: var(--ui-social-border-hover); text-decoration: none; }
+.social-link__icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  color: white; /* white mark → legible on any coloured background */
+}
+.social-link__icon svg { width: 100%; height: 100%; display: block; }
+.social-link__name { display: none; } /* icon-only; name kept on aria-label */
+
+@media (max-width: 767px) {
+  /* "Initials stage": reserved empty space below the contact content where the
+     Canvas-2D layer composes the WP initials, clearly visible (not under the
+     form). It's SECTION padding, not a child element, so it never becomes a
+     particle obstacle. Also gives the scroll arc room to reach the initials. */
+  #contact { padding-bottom: 6vh; } /* socials sit lower / closer to footer (was 18vh); WP initials compose in viewport coords so they're unaffected */
+}
+
+/* ---------- footer / misc ---------- */
+
+.site-footer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3) var(--space-6);
+  color: var(--c-text-faint);
+  font-size: var(--fs-1);
+}
+
+/* Mobile is free-scroll (no scene-nav): the footer is this in-flow BASE rule,
+   whose space-6 (48px) bottom padding + the <p>'s default UA margin parked the
+   credit line ~60px above the document bottom. Pull it near the edge. Placed
+   AFTER the base rule so the padding-bottom override actually wins. */
+@media (max-width: 767px) {
+  .site-footer { padding-bottom: var(--space-2); }
+  .site-footer p { margin: 0; }
+}
+
+.fatal-error {
+  margin: var(--space-6) auto;
+  max-width: 600px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-accent-3);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.noscript { padding: var(--space-6) var(--space-3); max-width: 700px; margin: 0 auto; }
+
+/* ---------- breakpoints ---------- */
+
+@media (max-width: 767px) {
+  /* compact second bar: no FAB reserve (FAB moved to centre-right) */
+  .site-subbar__inner { padding-right: var(--space-3); }
+  .site-subbar__headline { font-size: var(--fs-1); }
+
+  /* ---- mobile scrolled-header redesign ---------------------------------- */
+
+  /* Row 1: "ECV - Christina Debug" brand only (actions removed from flow).
+     No-wrap + smaller brand so everything fits at 312 px. */
+  body.is-scrolled .site-header__inner {
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+    /* allow overflow:visible so the absolutely-positioned .header-actions
+       is not clipped by the header's edge */
+    overflow: visible;
+  }
+  /* Row 1 holds only the brand now → let it grow into the freed space. */
+  body.is-scrolled .brand { font-size: clamp(0.82rem, 4.2vw, var(--fs-3)); min-width: 0; flex-shrink: 1; overflow: hidden; }
+  body.is-scrolled .brand__name { white-space: nowrap; }
+
+  /* Part B: move lang+PDF buttons out of Row 1 flow → Row 3 bottom-right.
+     .site-header is position:sticky (a containing block), so absolute here
+     anchors to the header box (not the viewport). */
+  body.is-scrolled .header-actions {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-2);
+    margin: 0;
+    gap: var(--space-1);
+    flex-shrink: 0;
+  }
+
+  /* Show abbreviation, hide full name; show hyphen, hide em-dash */
+  body.is-scrolled .brand__full  { display: none; }
+  body.is-scrolled .brand__abbr  { display: inline; }
+  body.is-scrolled .brand__sep-em { display: none; }
+  body.is-scrolled .brand__sep-hy { display: inline; }
+
+  /* Ensure sep+name expand on mobile-scrolled (same as desktop, override if needed) */
+  body.is-scrolled .brand__sep { max-width: 2ch; opacity: 1; transform: none; }
+  body.is-scrolled .brand__name { max-width: none; opacity: 1; transform: none; }
+
+  /* Rows 2+3: subbar stacks vertically — job title then counters.
+     Raise max-height to 96px so the absolutely-positioned buttons (Row 3)
+     are fully visible and not clipped. */
+  body.is-scrolled .site-subbar { max-height: 116px; }
+
+  .site-subbar__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    /* bigger gap so Row 3 (counters + the taller buttons) drops clearly BELOW
+       Row 2 (the title) instead of the buttons reaching up into it. */
+    gap: 16px;
+    /* Row 2 (title) gets full width; Row 3 counters reserve space for the
+       buttons on the right so they never overlap. */
+    padding-right: var(--space-3);
+  }
+
+  /* Row 2: full-width title (fitHeadline measures this wider width → bigger font) */
+  .site-subbar__headline { width: 100%; max-width: 100%; }
+
+  /* Row 3: push counters left so the abs-positioned buttons don't overlap */
+  body.is-scrolled .site-subbar__counters { margin-left: 0; padding-right: 130px; }
+
+  /* Non-scrolled: no padding override needed */
+  .site-subbar__counters { margin-left: 0; }
+}
+
+@media (min-width: 768px) {
+  .hero__headline { font-size: var(--fs-7); }
+  .expertise-grid { grid-template-columns: repeat(2, 1fr); }
+  .education-list { grid-template-columns: repeat(2, 1fr); }
+  .contact-links { grid-template-columns: repeat(2, 1fr); }
+  /* Experience grid: 2 per row on tablet.
+     Subtract a FULL gap per card (not the exact 2/N share) so sub-pixel
+     rounding never tips a row over its width and forces an early wrap. */
+  .exp-card { flex: 0 1 calc(50% - var(--space-4)); }
+}
+
+@media (min-width: 1024px) {
+  /* Experience grid: 3 per row on desktop (same anti-wrap slack as above). */
+  .exp-card { flex: 0 1 calc(33.3333% - var(--space-4)); }
+}
+
+/* expertise stays 2 columns at every width (see .expertise-grid base at 768px+);
+   the last card spans both columns — handled by .expertise-card:last-child below */
+
+/* ---------- print: see css/print.css (loaded with media="print") ---------- */
+
+/* ---------- magnetic cursor ---------- */
+
+/*
+ * cursor:none is ONLY applied under body.has-magnetic-cursor (added by JS on
+ * success). If JS fails or guards fire, the native cursor is never hidden.
+ */
+body.has-magnetic-cursor,
+body.has-magnetic-cursor a[href],
+body.has-magnetic-cursor button,
+body.has-magnetic-cursor .contact-link,
+body.has-magnetic-cursor [role="button"],
+body.has-magnetic-cursor .header-btn,
+body.has-magnetic-cursor .magnetic {
+  cursor: none;
+}
+
+/* Base layer shared by both cursor nodes. */
+.mcursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 50%;
+  /*
+   * GSAP owns the `transform` property entirely (x/y via quickTo). Centering on
+   * the pointer is done with xPercent/yPercent:-50 set in JS — NOT a CSS
+   * translate(-50%,-50%), which GSAP would clobber the moment it writes x/y.
+   * xPercent stays correct even as the ring grows (it's a % of own size).
+   */
+  will-change: transform;
+  /*
+   * mix-blend-mode: difference makes the dot/ring invert whatever is beneath,
+   * creating a self-adapting contrast on both the dark background and white
+   * card surfaces — no need to hard-code separate light/dark colors.
+   */
+  mix-blend-mode: difference;
+}
+
+/* Small filled dot — fast, near-direct mouse tracking. */
+.mcursor--dot {
+  width: 8px;
+  height: 8px;
+  background: var(--c-text);
+  /* No `transition: transform` here — GSAP quickTo already smooths movement;
+     a CSS transform transition on top would double-ease and feel rubbery. The
+     click "press" scale is driven by GSAP (see magnetic-cursor.js). */
+}
+
+/* Larger outline ring — slower, lags behind the dot. */
+.mcursor--ring {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--c-text);
+  background: transparent;
+  transition:
+    width  var(--dur-fast) var(--ease-out),
+    height var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow   var(--dur-fast) var(--ease-out),
+    opacity      var(--dur-fast) var(--ease-out);
+}
+
+/* Active state: ring grows and glows when over an interactive element. */
+.mcursor--ring.mcursor--active {
+  width: 64px;
+  height: 64px;
+  border-color: var(--ui-cursor-ring-button);
+  box-shadow: 0 0 12px var(--c-glow);
+}
+
+/* Over a link specifically (vs. a button) — its own ring colour. */
+.mcursor--ring.mcursor--active.mcursor--over-link {
+  border-color: var(--ui-cursor-ring-link);
+}
+
+/* ---------- glyph assembly (section titles + About / cards / contact) ------ */
+
+/*
+ * Each character of a reveal target is wrapped in a .glyph span. inline-block
+ * is required for transforms (opacity, x, y, rotation) to apply per-character.
+ * Space glyphs preserve their natural width via white-space: pre so word gaps
+ * don't collapse. Used by scroll-story.js across titles, the About paragraph,
+ * expertise/experience/education headings and the contact button text.
+ */
+.glyph {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.glyph--space {
+  white-space: pre;
+}
+
+.glyph-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   RESTYLE A — "Ultraviolet Noir" character layer.
+   Pure graphics: JetBrains Mono on meta/labels (terminal-luxury signature),
+   tighter display tracking, and surgical ultraviolet glow on hover. No layout
+   or behaviour changes — every value is a token, no hex here.
+   ========================================================================== */
+
+/* ---- meta / labels: monospaced, uppercase, tracked (the "data" voice) ---- */
+.counters,
+.header-btn,
+.contact-link__label,
+.role__period,
+.project__period,
+.company-card__location,
+.education-card__meta,
+.site-footer {
+  font-family: var(--font-mono);
+  letter-spacing: .04em;
+  font-feature-settings: "tnum" 1;
+}
+
+.header-btn,
+.contact-link__label,
+.site-footer {
+  text-transform: uppercase;
+}
+
+.header-btn { letter-spacing: .10em; }
+
+/* ---- display headings: tight, luxe tracking (Space Grotesk) ---- */
+.section-title,
+.hero__headline,
+.company-card__name,
+.brand {
+  letter-spacing: -0.02em;
+}
+
+/* ---- surgical ultraviolet glow on interactive surfaces ---- */
+.expertise-card,
+.education-card,
+.contact-link {
+  transition: background var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out),
+              opacity var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+
+.expertise-card:hover,
+.contact-link:hover {
+  border-color: color-mix(in srgb, var(--c-accent-1) 50%, transparent);
+  box-shadow: 0 10px 34px -14px var(--c-glow);
+}
+
+/* Expertise/Education hover stays IN its own domain colour (overrides the accent
+   hover above, placed later so it wins) — the card brightens, doesn't change hue. */
+.expertise-card:hover,
+.education-card:hover {
+  border-color: color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 66%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 34%, transparent),
+    0 18px 50px -16px color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 62%, transparent);
+}
+
+.header-btn--accent:hover {
+  border-color: var(--ui-pdf-border-hover);
+  color: var(--ui-pdf-text-hover);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-accent-1) 45%, transparent),
+              0 8px 26px -12px var(--c-glow);
+}
+
+/* ==========================================================================
+   EXPERIENCE TYPOGRAPHY (data-driven) — cv_ui.json → experience_typography,
+   injected onto --exp-* tokens by js/theme.js. Placed LAST so these win over
+   the base h-tag rule, the per-element rules above and the RESTYLE mono group.
+   font/color/size for each text role; glyph-split elements (company name, role
+   title) inherit these onto their per-character .glyph children.
+   ========================================================================== */
+.company-card__name {
+  font-family: var(--exp-company-font);
+  color: var(--exp-company-color);
+  font-size: var(--exp-company-size);
+}
+.company-card__location {
+  font-family: var(--exp-loc-font);
+  color: var(--exp-loc-color);
+  font-size: var(--exp-loc-size);
+}
+.role__title {
+  font-family: var(--exp-role-font);
+  color: var(--exp-role-color);
+  font-size: var(--exp-role-size);
+}
+/* period = "<date> · <duration>" split into spans by ui-renderer.js */
+.period__date {
+  font-family: var(--exp-date-font);
+  color: var(--exp-date-color);
+  font-size: var(--exp-date-size);
+}
+.period__sep { color: var(--exp-date-color); }
+.period__dur {
+  font-family: var(--exp-dur-font);
+  color: var(--exp-dur-color);
+  font-size: var(--exp-dur-size);
+}
+.role__hook {
+  font-family: var(--exp-desc-font);
+  color: var(--exp-desc-color);
+  font-size: var(--exp-desc-size);
+}
+.project__name {
+  font-family: var(--exp-proj-font);
+  color: var(--exp-proj-color);
+  font-size: var(--exp-proj-size);
+}
+.bullets {
+  font-family: var(--exp-bullet-font);
+  color: var(--exp-bullet-color);
+  font-size: var(--exp-bullet-size);
+}
+
+/* Live counter colour while it animates to a new value after a filter change
+   (js/counters.js toggles .is-recalc). Last in source → wins over the hero /
+   subbar counter colour rules above. */
+.counters.is-recalc { color: var(--ui-counter-text-recalc); }
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  /* Cursor transitions neutralised — JS already no-ops entirely, but belt-and-suspenders. */
+  .mcursor { display: none !important; }
+}
+
+/* ==========================================================================
+   SCENE-NAV — full-page step-scroll controller.
+   Active only when body.scene-nav is present (set by js/scene-nav.js).
+   No scene-nav class = legacy free-scroll site, untouched.
+
+   Layout strategy: make every LOCKED scene exactly one viewport tall so the
+   stepper can snap to them cleanly. #experience stays auto-height (free scroll).
+   #contact also houses the site footer inside its viewport — centred content
+   with footer pinned to the bottom.
+   ========================================================================== */
+
+/* ---- Section sizing in step-scroll mode ---- */
+
+/* Prevent html/body smooth-scroll from fighting the GSAP tween on every
+   window.scrollTo call. behavior:"instant" in JS overrides this anyway,
+   but belt-and-suspenders avoids any edge-case jank.
+   Note: we handle this in JS via document.documentElement.style.scrollBehavior
+   rather than a CSS selector (body.scene-nav html is not a valid descendant). */
+
+/* Hero: already min-height calc(100svh - 64px) via .section--hero; keep as-is.
+   The 64px offset is the header height — hero fills the visible viewport. */
+
+/* About, Expertise, Education, Contact: each a locked full-viewport scene.
+   Display as a flex column so content can be vertically centered or aligned
+   as needed per section (default: flex-start = natural top alignment with
+   the section's existing padding). */
+body.scene-nav #about,
+body.scene-nav #expertise,
+body.scene-nav #education,
+body.scene-nav #contact {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  /* Keep existing section padding at top so content doesn't hug the header */
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-7);
+}
+
+/* Vertically CENTER the content of these scenes. The stepper anchors them by
+   their content centre (js/scene-nav.js sceneScrollTop), so the section box
+   still fills the viewport and the next scene stays hidden (no bleed). */
+body.scene-nav #about,
+body.scene-nav #expertise,
+body.scene-nav #education {
+  justify-content: center;
+}
+
+/* Contact stays top-aligned (left as-is per request). */
+body.scene-nav #contact {
+  justify-content: flex-start;
+}
+
+/* In step-scroll mode the footer lives below the contact section in the DOM.
+   Fix it to the very bottom of the viewport so it's always readable — it acts
+   as a permanent bottom bar (extremely subtle on dark theme). The opacity only
+   rises on the contact scene via body[data-scene="contact"] so it doesn't
+   distract on other scenes. */
+body.scene-nav .site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  z-index: 40; /* below header(50), above content */
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  /* Keep in layout flow so it doesn't affect scrollHeight measurements */
+  pointer-events: none;
+}
+
+body.scene-nav[data-scene="contact"] .site-footer {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* #experience: auto height — free native scroll. No min-height override. */
+
+/* ---- Dot navigation ---- */
+
+/*
+ * A fixed vertical strip on the right edge, vertically centered.
+ * One button per scene; current scene gets the accent color + larger dot.
+ * Uses existing token variables so it matches the "Ultraviolet Noir" theme.
+ */
+.scene-dot-nav {
+  position: fixed;
+  left: 24px;
+  bottom: 48px;          /* anchored to the bottom (start from the bottom) */
+  top: auto;
+  transform: none;
+  z-index: 60;           /* above content, below modal/overlay */
+  display: flex;
+  flex-direction: column;
+  gap: 22px;             /* roomier vertical spread */
+  /* Hidden on the hero (step 1); revealed from step 2 onward via
+     body.is-scrolled — same trigger as the brand name + sub-bar. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-out),
+              visibility 0s linear var(--dur-base);
+}
+body.is-scrolled .scene-dot-nav {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity var(--dur-base) var(--ease-out), visibility 0s;
+}
+/* Authoritative gate: NEVER show the dot-nav while the hero is the current
+   scene, whatever is-scrolled does (it can flip on early during the step-away,
+   or be left set by other paths). body[data-scene] is maintained per scene by
+   scene-nav (= "hero" at load AND on return). Placed last so it wins. */
+body[data-scene="hero"] .scene-dot-nav {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The button is just a transparent click/focus target; the visible white
+   OUTLINE is drawn by the goo layer below (disc + punched hole). */
+.scene-dot {
+  position: relative;
+  z-index: 3;               /* clickable, above all the ink layers */
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.scene-dot:focus-visible {
+  outline: 2px solid var(--c-focus-ring);
+  outline-offset: 3px;
+}
+
+/* ---- the gooey OUTLINE metaball (two cells doing mitosis) ----
+   The trick for an OUTLINE that includes the connecting bridge: TWO overlaid
+   goo metaballs. The OUTER (white) is the full shape; the INNER (background
+   colour, ~2px smaller everywhere) sits on top and erodes it, leaving only a
+   ~2px white CONTOUR — around the rings AND along the bridge, which is hollow.
+   Layers (z, back→front): outer goo (white) · inner goo (bg) · purple dot.
+   JS drives both necks (top/height + scaleX pinch) and the dot (y), and gives
+   the discs a small organic "lean" toward each other. Buttons stay on top. */
+.scene-dot-goo,
+.scene-dot-goo-in {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 100%;
+  pointer-events: none;
+  filter: url(#dot-goo);
+}
+.scene-dot-goo    { z-index: 0; }   /* outer, white */
+.scene-dot-goo-in { z-index: 1; }   /* inner, bg → erodes the outer to a rim */
+
+.scene-dot-goo__ring,
+.scene-dot-goo-in__ring {
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  will-change: transform;   /* top set by JS; small "lean" via GSAP y */
+}
+.scene-dot-goo__ring    { margin-left: -9px; width: 18px; height: 18px; background: var(--c-text); }
+.scene-dot-goo-in__ring { margin-left: -7px; width: 14px; height: 14px; background: var(--c-bg); }
+
+.scene-dot-goo__neck,
+.scene-dot-goo-in__neck {
+  position: absolute;
+  left: 50%;
+  height: 0;                /* top/height (length) by JS; width pinch via scaleX */
+  border-radius: 999px;
+  transform: scaleX(0);
+}
+.scene-dot-goo__neck    { margin-left: -5.5px; width: 11px; background: var(--c-text); }
+.scene-dot-goo-in__neck { margin-left: -3.5px; width: 7px;  background: var(--c-bg); }
+
+.scene-dot-purple {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.scene-dot-purple__dot {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  margin-left: -4px;
+  margin-top: -4px;         /* so GSAP's y (= centre, nav coords) centres it */
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-accent-1);
+  box-shadow: 0 0 6px var(--c-glow);
+  will-change: transform;
+}
+
+/* Hide dot-nav on small viewports where touch swipe is the primary gesture */
+@media (max-width: 767px) {
+  .scene-dot-nav { display: none; }
+}
+
+/* ==========================================================================
+   PDF export dialog — full-CV vs filtered-selection chooser (js/pdf-export.js).
+   Only shown on screen when the PDF button is clicked with an active filter.
+   ========================================================================== */
+.pdf-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--c-bg) 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: pdf-dialog-fade var(--dur-base) var(--ease-out);
+}
+
+@keyframes pdf-dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.pdf-dialog {
+  width: min(460px, 100%);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+  text-align: center;
+}
+
+.pdf-dialog__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-4);
+  margin: 0 0 var(--space-2);
+  color: var(--c-text);
+}
+
+.pdf-dialog__msg {
+  font-size: var(--fs-2);
+  line-height: 1.5;
+  color: var(--c-text-dim);
+  margin: 0 0 var(--space-4);
+}
+
+.pdf-dialog__actions { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.pdf-dialog__btn {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-accent-1);
+  background: color-mix(in srgb, var(--c-accent-1) 14%, transparent);
+  color: var(--c-text);
+  transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.pdf-dialog__btn:hover {
+  background: color-mix(in srgb, var(--c-accent-1) 30%, transparent);
+  transform: translateY(-1px);
+}
+
+.pdf-dialog__cancel {
+  margin-top: var(--space-3);
+  font: inherit;
+  font-size: var(--fs-1);
+  background: none;
+  border: 0;
+  color: var(--c-text-dim);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pdf-dialog__cancel:hover { color: var(--c-text); }
+
+@media print { .pdf-dialog-backdrop { display: none !important; } }
+
+/* ==========================================================================
+   MOBILE card emphasis. Touch has no hover, so the cards never get the
+   desktop "brighten on hover" beat — light their RESTING state up instead, on a
+   dark site. Mobile-only: desktop keeps its subtler rest look (hover does the
+   work there). Placed last so it wins on source order over the base rules.
+   ========================================================================== */
+@media (max-width: 767px) {
+  /* Expertise & Education: stronger domain tint at rest (border + veil + glow). */
+  .expertise-card,
+  .education-card {
+    border-color: color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 58%, transparent);
+    background-image: linear-gradient(180deg,
+      color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 22%, transparent) 0%,
+      transparent 52%);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 28%, transparent),
+      0 14px 42px -20px color-mix(in srgb, var(--exp-c, var(--c-accent-1)) 72%, transparent);
+  }
+
+  /* Experience cards: the WebGL true-glass is desktop-only (experience-glass.js),
+     so on mobile the CSS card shows through. Drop the backdrop blur — there is
+     little behind it (the 2D particle field dodges the cards) and it is a real
+     perf cost on a scrolling phone — and keep the tinted pane + border + bevel,
+     so the card reads as a translucent slab with a visible edge. */
+  .exp-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

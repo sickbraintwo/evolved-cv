@@ -1,0 +1,441 @@
+/* ==========================================================================
+   print.css — F6b: clean A4 layout for the PDF button (window.print()).
+   Loaded with <link media="print">, so it never affects screen rendering.
+   ALL colors come from css/tokens.css (--c-print-*) — no hex here.
+
+   Rules of the page:
+   - no canvas / FAB / overlay / chip bar / footer chrome
+   - the FULL CV prints even when filters are active (.is-hidden is undone)
+   - compact readable typography on white, sensible page breaks
+   - external links show their URL
+   ========================================================================== */
+
+/* margin: 0 is deliberate. window.print() lets the BROWSER stamp its own
+   header/footer (page URL — e.g. http://127.0.0.1:8765 — date, page number) in
+   the @page margin boxes. There is no CSS to style those, but with a zero @page
+   margin there is no margin box to put them in, so they vanish. The real page
+   margins are moved onto <body> as padding (applies to every printed page). */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+html { scroll-behavior: auto; }
+
+body {
+  background: var(--c-print-bg);
+  color: var(--c-print-text);
+  padding: 14mm 14mm 16mm;
+  font-size: 10pt;
+  line-height: 1.45;
+}
+
+/* === ALL TEXT BLACK on paper ===
+   Forces every run of text to the print ink colour, killing any light,
+   gradient-CLIPPED (transparent-fill) or not-yet-revealed (opacity:0 glyph)
+   text that would otherwise print as suspicious blank gaps. */
+*,
+*::before,
+*::after {
+  color: var(--c-print-text) !important;
+  -webkit-text-fill-color: var(--c-print-text) !important;
+  text-shadow: none !important;
+}
+/* glyph-split titles assemble on scroll; on paper show them fully */
+.glyph {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ---------- interactive chrome: gone ---------- */
+
+#bg3d,
+.filter-fab,
+.filter-overlay,
+.filter-chip-panel,
+.header-actions,
+.site-footer,
+.site-subbar,
+.skip-link,
+.hero-lang,              /* intro language banner (EN/IT buttons) — not on paper */
+.hero__aside {           /* empty slot that hosts the banner on desktop */
+  display: none !important;
+}
+
+/* The CV is printed in the language shown on the site, so the address and the
+   language affordances are dropped: hide the hero location (keep "remote"). */
+.hero__meta-loc,
+.hero__meta-sep {
+  display: none !important;
+}
+
+/* ---------- step-scroll (scene-nav) chrome: flatten for print ----------
+   The scene stepper makes every locked scene 100svh tall, centres content with
+   flex, offsets the hero by 48vh, fixes the footer and shows a dot-nav. All of
+   that produces oversized / BLANK pages when printed. Collapse the scenes back
+   to ordinary flowing blocks so the CV paginates on content, not on viewports. */
+body.scene-nav .section,
+body.scene-nav #about,
+body.scene-nav #expertise,
+body.scene-nav #education,
+body.scene-nav #contact,
+body.scene-nav .section--hero {
+  min-height: 0 !important;
+  height: auto !important;
+  display: block !important;
+  padding-top: 10pt !important;
+  padding-bottom: 0 !important;
+}
+
+.scene-dot-nav,
+#filter-fab,
+.mcursor { display: none !important; }
+
+/* hero: drop the 48vh particle-name offset and reveal the DOM name (the
+   canvas-rendered name never prints, so without this the hero has no name). */
+.hero__inner,
+body.deflagration-active .hero__inner { padding-top: 0 !important; }
+
+body.deflagration-active .hero__kicker {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 0 2pt !important;
+  clip: auto !important;
+  clip-path: none !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  font-size: 20pt !important;
+  font-weight: 700 !important;
+  color: var(--c-print-text) !important;
+  -webkit-text-fill-color: var(--c-print-text) !important;
+}
+
+/* ---------- print the FULL CV even with active filters ---------- */
+
+.is-hidden {
+  opacity: 1 !important;
+  transform: none !important;
+  max-height: none !important;
+  overflow: visible !important;
+  pointer-events: auto !important;
+  border-width: 1px !important;
+}
+
+/* ...UNLESS the user chose "filtered selection only" at export time: then the
+   non-matching experience units stay out so the PDF shows just the filtered CV. */
+body.print-filtered .is-hidden,
+body.print-filtered .exp-card.is-hidden,
+body.print-filtered .project.is-hidden {
+  display: none !important;
+}
+
+/* the screen rule hides filtered exp-cards with display:none — undo for print */
+.exp-card.is-hidden { display: flex !important; max-height: none !important; }
+.project.is-hidden { padding: 6pt 8pt !important; margin: 0 !important; }
+
+/* GSAP may have left mid-animation inline styles on reveal targets */
+.section-title,
+.about__summary,
+.card,
+.contact-link,
+.education-langs,
+.hero__inner {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ---------- header ---------- */
+
+.site-header {
+  position: static;
+  background: var(--c-print-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 2pt solid var(--c-print-text);
+}
+
+.site-header__inner { padding: 0 0 6pt; max-width: none; }
+
+.brand {
+  background: none;
+  -webkit-text-fill-color: var(--c-print-text);
+  color: var(--c-print-text);
+}
+
+.brand__sep,
+.brand__name {
+  display: inline;
+  max-width: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  overflow: visible !important;
+  -webkit-text-fill-color: var(--c-print-muted);
+  color: var(--c-print-muted);
+  font-weight: 500;
+}
+
+.counters { color: var(--c-print-muted); }
+
+.hero__counters { margin: 2pt 0 0; }
+.hero__counters .counters { font-size: 10pt; color: var(--c-print-muted); }
+
+/* ---------- layout / sections ---------- */
+
+main { max-width: none; padding: 0; }
+
+.section { padding: 10pt 0 0; }
+
+.section-title {
+  font-size: 14pt;
+  margin-bottom: 8pt;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.section-title::before { background: var(--c-print-accent); }
+
+/* ---------- hero / about (compact) ---------- */
+
+.section--hero {
+  min-height: 0;
+  display: block;
+  padding-top: 8pt;
+}
+
+.hero__kicker { font-size: 11pt; color: var(--c-print-muted); margin-bottom: 2pt; }
+
+.hero__headline {
+  background: none;
+  -webkit-text-fill-color: var(--c-print-text);
+  color: var(--c-print-text);
+  font-size: 20pt;
+  margin-bottom: 4pt;
+}
+
+.hero__sub { font-size: 11pt; color: var(--c-print-muted); margin: 0 0 2pt; }
+.hero__meta { color: var(--c-print-faint); margin: 0; }
+
+.about__summary { font-size: 10.5pt; color: var(--c-print-text); max-width: none; }
+/* keep auto-tinted About words bold but in print-ink (no screen colours on paper) */
+.about-hl { color: inherit; }
+
+/* ---------- cards / expertise ---------- */
+
+.card,
+.project,
+.contact-link {
+  background: var(--c-print-bg);
+  color: var(--c-print-text);
+  border: 1pt solid var(--c-print-border);
+  border-radius: 4pt;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.card { padding: 8pt; }
+.project { padding: 6pt 8pt; }
+
+.expertise-grid { grid-template-columns: repeat(2, 1fr); gap: 6pt; }
+
+.expertise-card__title { font-size: 11pt; margin-bottom: 3pt; }
+.expertise-card__items { color: var(--c-print-muted); margin-bottom: 4pt; }
+
+/* ---------- experience: every card EXPANDED + stacked ---------- */
+
+/* The screen UI is a 3-up accordion (collapsed cards hide .exp-card__detail).
+   On paper we drop the grid, stack the cards full-width, and force ALL details
+   open so each experience prints in full (not the collapsed summary). */
+.experience-grid { display: block !important; }
+.exp-card {
+  display: block !important;
+  flex: none !important;
+  width: 100% !important;
+  max-height: none !important;
+  background: var(--c-print-bg) !important;
+  border: 1pt solid var(--c-print-border) !important;
+  border-radius: 4pt;
+  padding: 8pt !important;
+  margin: 0 0 8pt !important;
+  cursor: auto !important;
+  /* override the generic .card "avoid" — a tall card (e.g. Winteraction, 7
+     roles) must be allowed to flow across pages, else it jumps whole to the
+     next page and leaves the previous one mostly blank. */
+  break-inside: auto !important;
+  page-break-inside: auto !important;
+}
+.exp-card::before { display: none !important; } /* decorative glass layer off */
+.exp-card__detail {
+  display: block !important;
+  opacity: 1 !important;
+  transform: none !important;
+  margin-top: 6pt;
+}
+
+/* Strip the on-screen glass/gleam decorations that don't belong on paper: the
+   white sheen ::after on role heads and tag pills was printing OVER the text
+   (so some tags looked missing), and the reflective role-head box. */
+.exp-card .role__head {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+.exp-card .role__head::after,
+.exp-card .tag-pills .pill::after { display: none !important; content: none !important; }
+
+/* Tags: solid black text, light border, nothing clipped. */
+.pill,
+.exp-card .tag-pills .pill {
+  color: var(--c-print-text) !important;
+  border: 1pt solid var(--c-print-border) !important;
+  background: none !important;
+  overflow: visible !important;
+}
+
+.company-card__head { margin-bottom: 4pt; }
+.company-card__name { font-size: 12pt; }
+.company-card__location { color: var(--c-print-faint); }
+
+.role__title { font-size: 10.5pt; }
+.role__period { color: var(--c-print-faint); }
+.role__hook { color: var(--c-print-muted); margin: 2pt 0 4pt; }
+
+.projects { gap: 6pt; margin-top: 4pt; }
+.project__name { font-size: 10pt; margin-bottom: 2pt; }
+
+.bullets { color: var(--c-print-text); font-size: 9pt; }
+.bullets li { margin-bottom: 1pt; }
+
+/* ---------- pills / links ---------- */
+
+.pill {
+  color: var(--c-print-muted);
+  border-color: var(--c-print-border);
+  font-size: 7.5pt;
+}
+
+/* Coloured skill tags on paper: each tag keeps its domain hue, darkened toward
+   the ink colour for legible contrast on white. Text + border carry the colour
+   (background-color is omitted on purpose — browsers don't print backgrounds
+   unless "background graphics" is enabled, so the look must not depend on it).
+
+   Two-step so the colour survives the more specific grey overrides above
+   (e.g. `.exp-card .tag-pills .pill`): the low-specificity `.pill--*` rules only
+   stash the hue in per-tag custom props, then the high-specificity application
+   rule (matched in every pill context) paints from those props with !important. */
+.pill--ai       { --tag-ink: color-mix(in srgb, var(--c-domain-ai) 60%, var(--c-print-text));
+                  --tag-edge: color-mix(in srgb, var(--c-domain-ai) 55%, var(--c-print-bg)); }
+.pill--3dxr     { --tag-ink: color-mix(in srgb, var(--c-domain-3dxr) 60%, var(--c-print-text));
+                  --tag-edge: color-mix(in srgb, var(--c-domain-3dxr) 55%, var(--c-print-bg)); }
+.pill--2dmedia  { --tag-ink: color-mix(in srgb, var(--c-domain-2dmedia) 60%, var(--c-print-text));
+                  --tag-edge: color-mix(in srgb, var(--c-domain-2dmedia) 55%, var(--c-print-bg)); }
+.pill--dev      { --tag-ink: color-mix(in srgb, var(--c-domain-dev) 60%, var(--c-print-text));
+                  --tag-edge: color-mix(in srgb, var(--c-domain-dev) 55%, var(--c-print-bg)); }
+.pill--consulting { --tag-ink: color-mix(in srgb, var(--c-domain-consulting) 60%, var(--c-print-text));
+                  --tag-edge: color-mix(in srgb, var(--c-domain-consulting) 55%, var(--c-print-bg)); }
+
+.pill[class*="pill--"],
+.exp-card .tag-pills .pill[class*="pill--"],
+.expertise-card .pill[class*="pill--"],
+.education-card .pill[class*="pill--"] {
+  color: var(--tag-ink) !important;
+  -webkit-text-fill-color: var(--tag-ink) !important;
+  border-color: var(--tag-edge) !important;
+  font-weight: 600;
+}
+
+a { color: var(--c-print-text); text-decoration: none; }
+
+/* external links show their URL */
+.links a[href^="http"]::after,
+.contact-link[href^="http"]::after {
+  content: " (" attr(href) ")";
+  color: var(--c-print-faint);
+  font-size: 8pt;
+  font-weight: 400;
+  word-break: break-all;
+}
+
+.links { gap: 8pt; }
+.links a { color: var(--c-print-accent); }
+
+/* ---------- education / contact ---------- */
+
+.education-list { grid-template-columns: repeat(2, 1fr); gap: 6pt; }
+.education-card__meta { color: var(--c-print-faint); }
+.education-langs { color: var(--c-print-muted); margin-top: 8pt; }
+
+.contact-links { grid-template-columns: repeat(2, 1fr); gap: 6pt; }
+.contact-link { padding: 6pt 8pt; }
+.contact-link__label { color: var(--c-print-faint); min-width: 60pt; }
+
+/* contact restyle: the form is interactive (useless on paper) → hide it; show
+   the email/phone block + the social links as name + URL, drop the white icons
+   (invisible on white). */
+.contact-form { display: none !important; }
+.contact-layout { display: block !important; max-width: none !important; }
+
+/* direct contacts (email / phone): the reachable address on the paper CV */
+.contact-direct { display: block !important; margin-bottom: 8pt; }
+.contact-direct__row {
+  display: flex;
+  gap: 6pt;
+  align-items: baseline;
+  margin: 0 0 3pt;
+  font-size: 10pt;
+}
+.contact-direct__label {
+  min-width: 52pt;
+  color: var(--c-print-faint) !important;
+  -webkit-text-fill-color: var(--c-print-faint) !important;
+  font-weight: 600;
+}
+.contact-direct__value {
+  color: var(--c-print-accent) !important;
+  -webkit-text-fill-color: var(--c-print-accent) !important;
+  word-break: break-all;
+}
+
+/* PDF toggles (editor → cv_ui.json site_config.pdf, applied as body classes by
+   js/ui-renderer.js): drop the email/phone contact rows, or hide the URL
+   addresses next to socials and external links. */
+body.pdf-no-email .contact-direct__row--email,
+body.pdf-no-phone .contact-direct__row--phone { display: none !important; }
+
+body.pdf-no-link .social-link[href^="http"]::after,
+body.pdf-no-link .links a[href^="http"]::after,
+body.pdf-no-link .contact-link[href^="http"]::after { content: "" !important; }
+
+.contact-socials { display: block !important; }
+/* On screen each social is a round icon-only button (56×56). On paper expand it
+   to a full-width labelled row: name + URL, no icon. Reset the fixed size/flex
+   so the URL flows instead of wrapping inside a tiny square. */
+.social-link {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  background: var(--c-print-bg) !important;
+  color: var(--c-print-text) !important;
+  border: 1pt solid var(--c-print-border) !important;
+  border-radius: 4pt;
+  padding: 5pt 8pt !important;
+  margin-bottom: 4pt;
+  break-inside: avoid;
+  font-size: 9.5pt;
+}
+.social-link__icon { display: none !important; }
+.social-link__name {
+  display: inline !important;
+  font-weight: 600;
+  color: var(--c-print-text) !important;
+  -webkit-text-fill-color: var(--c-print-text) !important;
+}
+.social-link[href^="http"]::after {
+  content: " — " attr(href);
+  color: var(--c-print-accent);
+  -webkit-text-fill-color: var(--c-print-accent);
+  font-weight: 400;
+  font-size: 8.5pt;
+  word-break: break-all;
+}

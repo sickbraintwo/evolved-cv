@@ -1,0 +1,870 @@
+/* AUTO-GENERATED — edit cv_data.json then run: node tools/sync-data.mjs */
+window.CV_DATA = {
+  "_meta": {
+    "note": "Fictitious demo data for the EvolvedCV template."
+  },
+  "profile": {
+    "name": "Christina Debug",
+    "headline": {
+      "en": "Computational Biologist & Digital Health Researcher",
+      "it": "Biologa Computazionale & Ricercatrice di Salute Digitale"
+    },
+    "subheadline": {
+      "en": "Bio-Computation · ML · Sci-Viz · Sci-Comm · Digital Health · 12+ yrs",
+      "it": "Bio-Computazione · ML · Sci-Viz · Sci-Comm · Salute Digitale · 12+ anni"
+    },
+    "summary": {
+      "en": "I am a computational biologist and digital health researcher with over 12 years of experience bridging genomics, sequence analysis, and wearables-based clinical monitoring. My core work spans structural biology — predicting protein structure from genomic data using Nextflow pipelines and PyTorch deep-learning models. I design interactive dataviz tools with D3.js and WebGL to surface insights from complex biological datasets, making science accessible through writing and teaching. In recent years I have focused on digital health systems: signal processing for PPG/ECG wearables, FHIR-compliant data architectures, and privacy-by-design platforms that bring machine learning research findings closer to real-world care.",
+      "it": "Sono una biologa computazionale e ricercatrice di salute digitale con oltre 12 anni di esperienza che collegano la genomica, l'analisi di sequenze e il monitoraggio clinico basato su wearable. Il mio lavoro principale spazia dalla biologia strutturale — previsione della struttura proteica da dati genomici tramite pipeline Nextflow e modelli deep learning con PyTorch. Progetto strumenti interattivi di dataviz con D3.js e WebGL per rendere visibili le intuizioni da dataset biologici complessi, rendendo la scienza accessibile attraverso la scrittura e l'insegnamento. Negli ultimi anni mi sono concentrata sui sistemi di salute digitale: elaborazione del segnale per wearable PPG/ECG, architetture di dati conformi a FHIR e piattaforme privacy-by-design che avvicinano le scoperte del machine learning alla cura reale del paziente."
+    },
+    "about_highlights": {
+      "biocomp": "genomics/genomica, sequence analysis/analisi di sequenze, structural biology/biologia strutturale, Nextflow pipelines",
+      "mlds": "machine learning, PyTorch, deep-learning",
+      "sciviz": "dataviz, D3.js, WebGL",
+      "scicomm": "writing/scrittura, teaching/insegnamento",
+      "dhealth": "wearables, PPG/ECG, FHIR, digital health/salute digitale"
+    },
+    "location": "Berlin, Germany",
+    "remote": true,
+    "photo": "assets/avatar.svg",
+    "contact": {
+      "email": "christina.debug@example.com",
+      "phone": "",
+      "linkedin": "https://www.linkedin.com/in/evolvedcv-demo",
+      "github": "https://github.com/evolvedcv-demo"
+    },
+    "contact_links": [
+      {
+        "label": "Email",
+        "href": "mailto:christina.debug@example.com",
+        "display": "christina.debug@example.com"
+      },
+      {
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/in/evolvedcv-demo",
+        "display": "linkedin.com/in/evolvedcv-demo"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/evolvedcv-demo",
+        "display": "github.com/evolvedcv-demo"
+      }
+    ],
+    "tags": []
+  },
+  "experience": [
+    {
+      "id": "nexagen_2022",
+      "company": "Nexagen Bioinformatics GmbH",
+      "company_location": "Berlin, Germany",
+      "role": {
+        "en": "Lead Computational Biologist",
+        "it": "Responsabile Biologa Computazionale"
+      },
+      "type": "full-time",
+      "remote": false,
+      "period": {
+        "start": "2022-03",
+        "end": "2025-09",
+        "label": {
+          "en": "Mar 2022 – Sep 2025 · 3 years 7 months",
+          "it": "Marzo 2022 – Settembre 2025 · 3 anni 7 mesi"
+        }
+      },
+      "hook": {
+        "en": "Led genomic analysis pipelines and ML model development for a Berlin biotech startup focused on rare-disease diagnostics and personalized oncology.",
+        "it": "Responsabile delle pipeline di analisi genomica e dello sviluppo di modelli ML per una startup biotech berlinese focalizzata sulla diagnostica di malattie rare e oncologia personalizzata."
+      },
+      "bullets": {
+        "en": [
+          "Designed and maintained Nextflow pipelines for whole-genome and exome sequencing, processing up to 500 samples per run on cloud HPC clusters",
+          "Built PyTorch deep-learning models for variant pathogenicity classification, achieving 91% AUC on held-out clinical validation sets",
+          "Integrated protein structure prediction (AlphaFold2 inference) into the variant interpretation workflow, reducing manual curation time by 40%",
+          "Mentored two junior bioinformaticians and established team coding standards, CI/CD practices, and Docker-based reproducible environments"
+        ],
+        "it": [
+          "Progettazione e manutenzione di pipeline Nextflow per sequenziamento whole-genome ed esoma, elaborando fino a 500 campioni per esecuzione su cluster HPC cloud",
+          "Sviluppo di modelli deep learning con PyTorch per la classificazione della patogenicità delle varianti, con AUC del 91% su set di validazione clinica",
+          "Integrazione della predizione della struttura proteica (inferenza AlphaFold2) nel workflow di interpretazione delle varianti, riducendo del 40% i tempi di revisione manuale",
+          "Tutoraggio di due bioinformatici junior e definizione di standard di codifica del team, pratiche CI/CD e ambienti riproducibili basati su Docker"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "genomics",
+        "sequence-analysis",
+        "structural-bio",
+        "deep-learning",
+        "mlops"
+      ]
+    },
+    {
+      "id": "heliodata_2020",
+      "company": "HelioData Sciences",
+      "company_location": "Amsterdam, Netherlands",
+      "role": {
+        "en": "ML Research Engineer",
+        "it": "Ingegnera di Ricerca ML"
+      },
+      "type": "contract",
+      "remote": true,
+      "period": {
+        "start": "2020-06",
+        "end": "2021-11",
+        "label": {
+          "en": "Jun 2020 – Nov 2021 · 1 year 6 months",
+          "it": "Giugno 2020 – Novembre 2021 · 1 anno 6 mesi"
+        }
+      },
+      "hook": {
+        "en": "Developed and validated classical and deep-learning models for biomedical time-series classification, paired with interactive dashboards for result exploration.",
+        "it": "Sviluppo e validazione di modelli classici e deep learning per la classificazione di serie temporali biomediche, con dashboard interattive per l'esplorazione dei risultati."
+      },
+      "bullets": {
+        "en": [
+          "Trained gradient-boosted and recurrent neural network models on multi-modal patient datasets for sepsis onset prediction (AUROC 0.87)",
+          "Built an interactive D3.js dashboard enabling clinicians to explore model predictions, feature importances, and cohort stratifications",
+          "Established MLflow-based experiment tracking and model registry for reproducible benchmarking across 14 algorithm variants"
+        ],
+        "it": [
+          "Addestramento di modelli gradient-boosted e reti neurali ricorrenti su dataset pazienti multi-modale per la predizione dell'insorgenza della sepsi (AUROC 0,87)",
+          "Sviluppo di una dashboard interattiva in D3.js che consente ai clinici di esplorare predizioni del modello, importanza delle feature e stratificazioni della coorte",
+          "Implementazione di experiment tracking e model registry basati su MLflow per benchmarking riproducibile su 14 varianti di algoritmo"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "classical-ml",
+        "deep-learning",
+        "dataviz"
+      ]
+    },
+    {
+      "id": "biosphere_2018",
+      "company": "BioSphere Insights AG",
+      "company_location": "Zurich, Switzerland",
+      "role": {
+        "en": "Bioinformatics Analyst",
+        "it": "Analista Bioinformatica"
+      },
+      "type": "full-time",
+      "remote": false,
+      "period": {
+        "start": "2018-02",
+        "end": "2020-03",
+        "label": {
+          "en": "Feb 2018 – Mar 2020 · 2 years 2 months",
+          "it": "Febbraio 2018 – Marzo 2020 · 2 anni 2 mesi"
+        }
+      },
+      "hook": {
+        "en": "Performed large-scale genomic data analysis for rare-disease diagnostics, integrating structured health data from clinical EHR systems.",
+        "it": "Analisi su larga scala di dati genomici per la diagnostica di malattie rare, con integrazione di dati sanitari strutturati da sistemi EHR clinici."
+      },
+      "bullets": {
+        "en": [
+          "Developed sequence alignment and variant annotation pipelines (BWA-MEM, GATK, SnpEff) for clinical-grade whole-exome sequencing",
+          "Applied homology modelling and structural alignment tools to assess missense variant impact on protein stability",
+          "Curated and harmonized patient phenotype data from three hospital EHR systems into a unified OMOP-compliant health data warehouse"
+        ],
+        "it": [
+          "Sviluppo di pipeline di allineamento di sequenze e annotazione di varianti (BWA-MEM, GATK, SnpEff) per il sequenziamento whole-exome in ambito clinico",
+          "Applicazione di modellazione per omologia e strumenti di allineamento strutturale per valutare l'impatto delle varianti missense sulla stabilità proteica",
+          "Curation e armonizzazione dei dati fenotipici dei pazienti da tre sistemi EHR ospedalieri in un data warehouse sanitario unificato conforme OMOP"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "genomics",
+        "sequence-analysis",
+        "structural-bio",
+        "health-data"
+      ]
+    },
+    {
+      "id": "lumenviz_2017",
+      "company": "LumenViz Studio",
+      "company_location": "Berlin, Germany",
+      "role": {
+        "en": "Scientific Visualization Designer",
+        "it": "Designer di Visualizzazione Scientifica"
+      },
+      "type": "freelance",
+      "remote": true,
+      "period": {
+        "start": "2017-05",
+        "end": "2018-01",
+        "label": {
+          "en": "May 2017 – Jan 2018 · 9 months",
+          "it": "Maggio 2017 – Gennaio 2018 · 9 mesi"
+        }
+      },
+      "hook": {
+        "en": "Designed and developed bespoke scientific data visualization tools for academic publications, conference keynotes, and public outreach websites.",
+        "it": "Progettazione e sviluppo di strumenti personalizzati di visualizzazione di dati scientifici per pubblicazioni accademiche, keynote di conferenze e siti di divulgazione pubblica."
+      },
+      "bullets": {
+        "en": [
+          "Created WebGL-powered genome browser components rendering chromosome-scale interaction maps for up to one million data points in real time",
+          "Authored technical blog posts and illustrated data stories to explain bioinformatics methods to non-specialist audiences",
+          "Produced reusable D3.js charting libraries (phylogenetic trees, sequence logos, coverage plots) adopted by three research institutes"
+        ],
+        "it": [
+          "Sviluppo di componenti per browser genomico basati su WebGL per il rendering in tempo reale di mappe di interazione a scala cromosomica fino a un milione di punti dati",
+          "Redazione di post tecnici e data story illustrate per spiegare i metodi bioinformatici a un pubblico non specialistico",
+          "Produzione di librerie di grafici riutilizzabili in D3.js (alberi filogenetici, sequence logo, coverage plot) adottate da tre istituti di ricerca"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "dataviz",
+        "web-graphics",
+        "writing"
+      ]
+    },
+    {
+      "id": "meridian_2015",
+      "company": "Meridian Health Technologies",
+      "company_location": "Hamburg, Germany",
+      "role": {
+        "en": "Digital Health Research Engineer",
+        "it": "Ingegnera di Ricerca in Salute Digitale"
+      },
+      "type": "full-time",
+      "remote": false,
+      "period": {
+        "start": "2015-06",
+        "end": "2017-04",
+        "label": {
+          "en": "Jun 2015 – Apr 2017 · 1 year 11 months",
+          "it": "Giugno 2015 – Aprile 2017 · 1 anno 11 mesi"
+        }
+      },
+      "hook": {
+        "en": "Designed and evaluated wearable monitoring devices and FHIR-compatible data pipelines for remote patient monitoring in clinical trial settings.",
+        "it": "Progettazione e valutazione di dispositivi wearable di monitoraggio e pipeline di dati compatibili con FHIR per il monitoraggio remoto dei pazienti in contesti di trial clinici."
+      },
+      "bullets": {
+        "en": [
+          "Developed pre-processing and feature extraction routines for PPG/ECG wearable sensor streams, enabling real-time arrhythmia flagging",
+          "Designed a FHIR R4-compliant data pipeline ingesting device readings into a secure cloud repository with automated de-identification",
+          "Deployed scikit-learn ensemble models in an MLOps framework for continuous monitoring of model drift in production health data streams",
+          "Coordinated cross-functional collaboration with clinical partners, regulatory affairs, and firmware engineers across four countries"
+        ],
+        "it": [
+          "Sviluppo di routine di pre-elaborazione ed estrazione di feature per i flussi di sensori wearable PPG/ECG, abilitando il rilevamento in tempo reale delle aritmie",
+          "Progettazione di una pipeline di dati conforme a FHIR R4 per l'ingestione delle letture dei dispositivi in un repository cloud sicuro con de-identificazione automatica",
+          "Deploy di modelli ensemble scikit-learn in un framework MLOps per il monitoraggio continuo del drift del modello nei flussi di dati sanitari in produzione",
+          "Coordinamento della collaborazione interfunzionale con partner clinici, regulatory affairs e ingegneri firmware in quattro paesi"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "wearables",
+        "health-data",
+        "fhir",
+        "mlops"
+      ]
+    },
+    {
+      "id": "opengenome_2019",
+      "company": "Open Genome Collective",
+      "company_location": "Remote",
+      "role": {
+        "en": "Volunteer Bioinformatician & Science Communicator",
+        "it": "Bioinformatica Volontaria & Divulgatrice Scientifica"
+      },
+      "type": "freelance",
+      "remote": true,
+      "period": {
+        "start": "2019-03",
+        "end": "2020-01",
+        "label": {
+          "en": "Mar 2019 – Jan 2020 · 11 months",
+          "it": "Marzo 2019 – Gennaio 2020 · 11 mesi"
+        }
+      },
+      "hook": {
+        "en": "Contributed to an open-access comparative genomics project and produced public tutorials and workshop materials for citizen scientists and students.",
+        "it": "Contributo a un progetto open-access di genomica comparativa e produzione di tutorial pubblici e materiali per workshop per citizen scientist e studenti."
+      },
+      "bullets": {
+        "en": [
+          "Annotated and curated 38 microbial genomes for a community comparative genomics resource, applying structural homology tools for functional inference",
+          "Authored six illustrated tutorial articles on sequence analysis workflows, collectively reaching over 12,000 unique readers",
+          "Designed and facilitated two online workshops (40 participants each) on introductory bioinformatics and genome visualization"
+        ],
+        "it": [
+          "Annotazione e curation di 38 genomi microbici per una risorsa di genomica comparativa della comunità, con applicazione di strumenti di omologia strutturale per l'inferenza funzionale",
+          "Redazione di sei articoli-tutorial illustrati sui workflow di analisi di sequenze, raggiungendo complessivamente oltre 12.000 lettori unici",
+          "Progettazione e conduzione di due workshop online (40 partecipanti ciascuno) su bioinformatica introduttiva e visualizzazione genomica"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "genomics",
+        "structural-bio",
+        "writing",
+        "teaching"
+      ]
+    },
+    {
+      "id": "vitalsignal_2013",
+      "company": "Vital Signal Labs",
+      "company_location": "Munich, Germany",
+      "role": {
+        "en": "Signal Processing Engineer",
+        "it": "Ingegnera di Elaborazione del Segnale"
+      },
+      "type": "contract",
+      "remote": false,
+      "period": {
+        "start": "2013-04",
+        "end": "2015-02",
+        "label": {
+          "en": "Apr 2013 – Feb 2015 · 1 year 11 months",
+          "it": "Aprile 2013 – Febbraio 2015 · 1 anno 11 mesi"
+        }
+      },
+      "hook": {
+        "en": "Developed signal processing algorithms for consumer wearable health sensors and applied classical ML classifiers to detect cardiac anomalies from ambulatory ECG recordings.",
+        "it": "Sviluppo di algoritmi di elaborazione del segnale per sensori wearable di salute consumer e applicazione di classificatori ML classici per rilevare anomalie cardiache da registrazioni ECG ambulatoriali."
+      },
+      "bullets": {
+        "en": [
+          "Implemented real-time QRS detection and heart-rate variability feature extraction for a novel PPG/ECG wristband prototype",
+          "Trained and benchmarked SVM, Random Forest, and k-NN classifiers on annotated Holter ECG datasets for arrhythmia classification (F1 = 0.89)",
+          "Authored technical documentation and user-facing data guides for regulatory submission packages (IEC 60601)"
+        ],
+        "it": [
+          "Implementazione del rilevamento QRS in tempo reale e dell'estrazione di feature della variabilità della frequenza cardiaca per un prototipo di braccialetto PPG/ECG innovativo",
+          "Addestramento e benchmarking di classificatori SVM, Random Forest e k-NN su dataset ECG Holter annotati per la classificazione delle aritmie (F1 = 0,89)",
+          "Redazione di documentazione tecnica e guide ai dati per l'utente per i pacchetti di sottomissione regolatoria (IEC 60601)"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "wearables",
+        "health-data",
+        "classical-ml"
+      ]
+    },
+    {
+      "id": "nexus_2016",
+      "company": "Nexus Academic Institute",
+      "company_location": "Berlin, Germany",
+      "role": {
+        "en": "Lecturer in Data Science & Bioinformatics",
+        "it": "Docente di Data Science & Bioinformatica"
+      },
+      "type": "freelance",
+      "remote": false,
+      "period": {
+        "start": "2016-01",
+        "end": "2019-06",
+        "label": {
+          "en": "Jan 2016 – Jun 2019 · 3 years 6 months",
+          "it": "Gennaio 2016 – Giugno 2019 · 3 anni 6 mesi"
+        }
+      },
+      "hook": {
+        "en": "Designed and delivered undergraduate and postgraduate courses in bioinformatics and applied data science, developing all course materials from scratch.",
+        "it": "Progettazione e docenza di corsi triennali e magistrali in bioinformatica e data science applicata, con sviluppo ex-novo di tutti i materiali del corso."
+      },
+      "bullets": {
+        "en": [
+          "Created a 12-week \"Genomics for Data Scientists\" curriculum covering sequence analysis, variant calling, and R/Bioconductor for 30 students per cohort",
+          "Developed open-source Jupyter notebooks and slide decks adopted as teaching resources by two partner universities",
+          "Supervised eight final-year project dissertations in computational biology and statistical genomics"
+        ],
+        "it": [
+          "Creazione di un curriculum di 12 settimane \"Genomica per Data Scientist\" che copre l'analisi di sequenze, il variant calling e R/Bioconductor per 30 studenti per coorte",
+          "Sviluppo di notebook Jupyter open-source e presentazioni adottate come risorse didattiche da due università partner",
+          "Supervisione di otto dissertazioni di progetto finale in biologia computazionale e genomica statistica"
+        ]
+      },
+      "projects": [],
+      "expskills": [
+        "teaching",
+        "writing",
+        "classical-ml",
+        "genomics"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "phd_compbio_2018",
+      "institution": "Institute of Computational Life Sciences",
+      "title": {
+        "en": "PhD in Computational Biology",
+        "it": "Dottorato in Biologia Computazionale"
+      },
+      "year": 2018,
+      "type": "phd",
+      "tags": [
+        "Computational Biology",
+        "PhD",
+        "Genomics"
+      ],
+      "expskills": [
+        "genomics",
+        "sequence-analysis",
+        "structural-bio",
+        "deep-learning"
+      ]
+    },
+    {
+      "id": "msc_bioinformatics_2012",
+      "institution": "Northern Digital Sciences University",
+      "title": {
+        "en": "MSc in Bioinformatics",
+        "it": "Laurea Magistrale in Bioinformatica"
+      },
+      "year": 2012,
+      "type": "masters",
+      "tags": [
+        "Bioinformatics",
+        "MSc"
+      ],
+      "expskills": [
+        "genomics",
+        "sequence-analysis",
+        "classical-ml"
+      ]
+    },
+    {
+      "id": "bsc_molbio_2010",
+      "institution": "Central European University of Natural Sciences",
+      "title": {
+        "en": "BSc in Molecular Biology",
+        "it": "Laurea Triennale in Biologia Molecolare"
+      },
+      "year": 2010,
+      "type": "bachelor",
+      "tags": [
+        "Molecular Biology",
+        "BSc"
+      ],
+      "expskills": [
+        "genomics",
+        "structural-bio"
+      ]
+    },
+    {
+      "id": "cert_fhir_2020",
+      "institution": "HL7 Academy",
+      "title": {
+        "en": "FHIR Practitioner Level 2",
+        "it": "Certificazione FHIR Practitioner Livello 2"
+      },
+      "year": 2020,
+      "type": "certification",
+      "tags": [
+        "FHIR",
+        "HL7",
+        "Certification"
+      ],
+      "expskills": [
+        "fhir",
+        "health-data"
+      ]
+    },
+    {
+      "id": "cert_mlops_2023",
+      "institution": "CloudSpark Learning Platform",
+      "title": {
+        "en": "MLOps Fundamentals",
+        "it": "Fondamentali di MLOps"
+      },
+      "year": 2023,
+      "type": "certification",
+      "tags": [
+        "MLOps",
+        "Machine Learning",
+        "Certification"
+      ],
+      "expskills": [
+        "mlops",
+        "classical-ml"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": {
+        "en": "English",
+        "it": "Inglese"
+      },
+      "level": {
+        "en": "Native",
+        "it": "Madrelingua"
+      }
+    },
+    {
+      "name": {
+        "en": "German",
+        "it": "Tedesco"
+      },
+      "level": {
+        "en": "Fluent",
+        "it": "Fluente"
+      }
+    },
+    {
+      "name": {
+        "en": "Italian",
+        "it": "Italiano"
+      },
+      "level": {
+        "en": "Intermediate",
+        "it": "Intermedio"
+      }
+    }
+  ],
+  "tag_taxonomy": {
+    "domains": [
+      {
+        "id": "biocomp",
+        "label": {
+          "en": "Bio-Computation",
+          "it": "Bio-Computazione"
+        },
+        "expertise_label": {
+          "en": "Computational Biology & Bioinformatics",
+          "it": "Biologia Computazionale & Bioinformatica"
+        },
+        "items": [
+          "Genomics",
+          "Sequence Analysis",
+          "Protein Structure",
+          "Nextflow Pipelines",
+          "R / Bioconductor"
+        ],
+        "role_fallback": {
+          "en": "Computational Biologist",
+          "it": "Biologa Computazionale"
+        },
+        "tags": [
+          {
+            "id": "genomics",
+            "label": {
+              "en": "Genomics",
+              "it": "Genomica"
+            },
+            "headline_fragment": {
+              "en": "Genomics",
+              "it": "Genomica"
+            }
+          },
+          {
+            "id": "sequence-analysis",
+            "label": {
+              "en": "Sequence Analysis",
+              "it": "Analisi di Sequenze"
+            },
+            "headline_fragment": {
+              "en": "Sequence Analysis",
+              "it": "Analisi di Sequenze"
+            }
+          },
+          {
+            "id": "structural-bio",
+            "label": {
+              "en": "Structural Biology",
+              "it": "Biologia Strutturale"
+            },
+            "headline_fragment": {
+              "en": "Structural Biology",
+              "it": "Biologia Strutturale"
+            }
+          }
+        ]
+      },
+      {
+        "id": "mlds",
+        "label": {
+          "en": "ML & Data",
+          "it": "ML & Dati"
+        },
+        "expertise_label": {
+          "en": "Machine Learning & Data Science",
+          "it": "Machine Learning & Data Science"
+        },
+        "items": [
+          "Python",
+          "PyTorch",
+          "scikit-learn",
+          "Statistics",
+          "MLOps"
+        ],
+        "role_fallback": {
+          "en": "ML / Data Scientist",
+          "it": "ML / Data Scientist"
+        },
+        "tags": [
+          {
+            "id": "deep-learning",
+            "label": {
+              "en": "Deep Learning",
+              "it": "Deep Learning"
+            },
+            "headline_fragment": {
+              "en": "Deep Learning",
+              "it": "Deep Learning"
+            }
+          },
+          {
+            "id": "classical-ml",
+            "label": {
+              "en": "Classical ML",
+              "it": "ML Classico"
+            },
+            "headline_fragment": {
+              "en": "Machine Learning",
+              "it": "Machine Learning"
+            }
+          },
+          {
+            "id": "mlops",
+            "label": {
+              "en": "MLOps",
+              "it": "MLOps"
+            },
+            "headline_fragment": {
+              "en": "MLOps",
+              "it": "MLOps"
+            }
+          }
+        ]
+      },
+      {
+        "id": "sciviz",
+        "label": {
+          "en": "Sci-Viz",
+          "it": "Sci-Viz"
+        },
+        "expertise_label": {
+          "en": "Scientific Visualization",
+          "it": "Visualizzazione Scientifica"
+        },
+        "items": [
+          "D3.js",
+          "WebGL",
+          "Three.js",
+          "Matplotlib",
+          "Interactive Dashboards"
+        ],
+        "role_fallback": {
+          "en": "Visualization Engineer",
+          "it": "Ingegnera di Visualizzazione"
+        },
+        "tags": [
+          {
+            "id": "dataviz",
+            "label": {
+              "en": "Data Viz",
+              "it": "Data Viz"
+            },
+            "headline_fragment": {
+              "en": "Data Visualization",
+              "it": "Visualizzazione Dati"
+            }
+          },
+          {
+            "id": "web-graphics",
+            "label": {
+              "en": "Web Graphics",
+              "it": "Grafica Web"
+            },
+            "headline_fragment": {
+              "en": "Web Graphics",
+              "it": "Grafica Web"
+            }
+          }
+        ]
+      },
+      {
+        "id": "scicomm",
+        "label": {
+          "en": "Sci-Comm",
+          "it": "Sci-Comm"
+        },
+        "expertise_label": {
+          "en": "Science Communication",
+          "it": "Comunicazione Scientifica"
+        },
+        "items": [
+          "Technical Writing",
+          "Talks & Teaching",
+          "Data Storytelling",
+          "Documentation",
+          "Workshops"
+        ],
+        "role_fallback": {
+          "en": "Science Communicator",
+          "it": "Divulgatrice Scientifica"
+        },
+        "tags": [
+          {
+            "id": "writing",
+            "label": {
+              "en": "Writing",
+              "it": "Scrittura"
+            },
+            "headline_fragment": {
+              "en": "Technical Writer",
+              "it": "Redattrice Tecnica"
+            }
+          },
+          {
+            "id": "teaching",
+            "label": {
+              "en": "Teaching",
+              "it": "Docenza"
+            },
+            "headline_fragment": {
+              "en": "Educator",
+              "it": "Formatrice"
+            }
+          }
+        ]
+      },
+      {
+        "id": "dhealth",
+        "label": {
+          "en": "Digital Health",
+          "it": "Salute Digitale"
+        },
+        "expertise_label": {
+          "en": "Digital Health & Wearables",
+          "it": "Salute Digitale & Wearable"
+        },
+        "items": [
+          "Signal Processing",
+          "Wearables (PPG/ECG)",
+          "HL7 / FHIR",
+          "Privacy by Design",
+          "Mobile Health"
+        ],
+        "role_fallback": {
+          "en": "Digital Health Researcher",
+          "it": "Ricercatrice di Salute Digitale"
+        },
+        "tags": [
+          {
+            "id": "wearables",
+            "label": {
+              "en": "Wearables",
+              "it": "Wearable"
+            },
+            "headline_fragment": {
+              "en": "Wearables",
+              "it": "Wearable"
+            }
+          },
+          {
+            "id": "health-data",
+            "label": {
+              "en": "Health Data",
+              "it": "Dati Sanitari"
+            },
+            "headline_fragment": {
+              "en": "Health Data",
+              "it": "Dati Sanitari"
+            }
+          },
+          {
+            "id": "fhir",
+            "label": {
+              "en": "FHIR",
+              "it": "FHIR"
+            },
+            "headline_fragment": {
+              "en": "FHIR",
+              "it": "FHIR"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "headline_rules": [
+    {
+      "match": [
+        "genomics"
+      ],
+      "headline": {
+        "en": "Bioinformatician",
+        "it": "Bioinformatica"
+      }
+    },
+    {
+      "match": [
+        "deep-learning"
+      ],
+      "headline": {
+        "en": "Machine Learning Engineer",
+        "it": "Ingegnera di Machine Learning"
+      }
+    },
+    {
+      "match": [
+        "deep-learning",
+        "genomics"
+      ],
+      "headline": {
+        "en": "Computational Biology ML Engineer",
+        "it": "Ingegnera ML di Biologia Computazionale"
+      }
+    },
+    {
+      "match": [
+        "dataviz"
+      ],
+      "headline": {
+        "en": "Data Visualization Engineer",
+        "it": "Ingegnera di Visualizzazione Dati"
+      }
+    },
+    {
+      "match": [
+        "web-graphics",
+        "dataviz"
+      ],
+      "headline": {
+        "en": "Creative Data Visualization Developer",
+        "it": "Sviluppatrice Creativa di Visualizzazione Dati"
+      }
+    },
+    {
+      "match": [
+        "wearables",
+        "health-data"
+      ],
+      "headline": {
+        "en": "Digital Health Engineer",
+        "it": "Ingegnera di Salute Digitale"
+      }
+    },
+    {
+      "match": [
+        "fhir"
+      ],
+      "headline": {
+        "en": "Health Data Interoperability Engineer",
+        "it": "Ingegnera di Interoperabilità dei Dati Sanitari"
+      }
+    },
+    {
+      "match": [
+        "teaching",
+        "writing"
+      ],
+      "headline": {
+        "en": "Science Communicator & Educator",
+        "it": "Divulgatrice Scientifica & Formatrice"
+      }
+    }
+  ]
+};

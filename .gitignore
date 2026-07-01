@@ -1,0 +1,11 @@
+# tooling deps (Playwright screenshot harness — dev only, not shipped)
+node_modules/
+playwright-report/
+test-results/
+
+# OS / editor cruft
+Thumbs.db
+.DS_Store
+
+# editor local-history extension (grows unbounded, not source)
+.history/

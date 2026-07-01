@@ -1,0 +1,239 @@
+/* AUTO-GENERATED — edit cv_ui.json then run: node tools/sync-data.mjs */
+window.CV_UI = {
+  "_meta": {
+    "description": "UI / graphic settings for the EvolvedCV site (NON-textual). Split out of cv_data.json: theme colors, fonts, particle field, intro timing, default views, domain colors and the WebGL glass material. Editing this file changes the look; cv_data.json holds only textual content. After editing run: node tools/sync-data.mjs",
+    "version": "1.0.0"
+  },
+  "site_config": {
+    "theme": {
+      "primary_color": "#02B0FD",
+      "accent_color": "#A5FCFF",
+      "particle_hover_color": "#79E8FF",
+      "background_color": "#000000",
+      "button_surface": "#0E0D12",
+      "button_border": "#0E0D12",
+      "text_color": "#F2F0FB",
+      "font_heading": "Space Grotesk",
+      "font_body": "Inter"
+    },
+    "intro_explosion": "fireworks",
+    "intro_timing": {
+      "apparition": 3,
+      "explosion": 1,
+      "composition_name": 1.6,
+      "breath": 2.4,
+      "show_text": 0.5,
+      "counter_fade": 0.5,
+      "language": 0.6
+    },
+    "sections_order": [
+      "hero",
+      "about",
+      "expertise",
+      "experience",
+      "education",
+      "contact"
+    ],
+    "show_timeline": true,
+    "show_skill_bars": true,
+    "particle_effect": "galaxy",
+    "particle_count": 10000,
+    "language_toggle": true,
+    "footer_tagline": {
+      "en": "built with EvolvedCV",
+      "it": "built with EvolvedCV"
+    },
+    "pdf": {
+      "format": "A4",
+      "email": true,
+      "phone": false,
+      "link": false,
+      "footer_note": {
+        "en": "Generated with EvolvedCV — interactive version online.",
+        "it": "Generato con EvolvedCV — versione interattiva online."
+      }
+    },
+    "filter_views": [
+      "constellation"
+    ],
+    "default_view_desktop": "constellation",
+    "default_view_mobile": "constellation"
+  },
+  "domain_colors": {
+    "biocomp": "#2BD9A8",
+    "mlds": "#5B8CFF",
+    "sciviz": "#C77DFF",
+    "scicomm": "#FFC24B",
+    "dhealth": "#FF6EC7"
+  },
+  "glass": {
+    "_comment": "WebGL glass material for the Experience cards. 'card' = outer slab (slab 1), 'project' = nested slab per project (slab 2). Tune freely and differentiate the two. dispersion = chromatic aberration; centerBlur adds a frosted centre (radial roughness map); depth/radius are the slab thickness and corner bevel in px. attenuationColor also tints the CSS fallback (no-WebGL phones); cssBlur (px) sets that fallback's backdrop blur — both only visible where WebGL glass is OFF.",
+    "card": {
+      "transmission": 1,
+      "ior": 1.7,
+      "thickness": 500,
+      "cssBlur": 10,
+      "roughness": 0.22,
+      "centerBlur": true,
+      "centerBlurSize": 5,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.05,
+      "dispersion": 5,
+      "attenuationColor": "#A2A2A2",
+      "attenuationDistance": 300,
+      "envMapIntensity": 1.1,
+      "specularIntensity": 0.7,
+      "depth": 600,
+      "radius": 40,
+      "seg": 6
+    },
+    "project": {
+      "transmission": 1,
+      "ior": 1.5,
+      "thickness": 20,
+      "roughness": 0.22,
+      "centerBlur": true,
+      "centerBlurSize": 5,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.05,
+      "dispersion": 5,
+      "attenuationColor": "#E900FF",
+      "attenuationDistance": 4,
+      "envMapIntensity": 0,
+      "specularIntensity": 1,
+      "depth": 1000,
+      "radius": 20,
+      "seg": 6
+    }
+  },
+  "ui_elements": {
+    "_comment": "Single-color knobs for specific interactive chrome. Injected by js/theme.js onto --ui-* tokens (defaults in css/tokens.css match these values, so leaving them unchanged keeps the current look). Any CSS color string is valid (hex, rgb(), rgba()). 'recalc' = colour of the live counter while it animates to a new value after a filter change. The cursor-ring values colour the large trailing ring of the custom cursor when it is over a button vs over a link (rendered through mix-blend-mode: difference, so the on-screen tint is the inverse against the backdrop).",
+    "pdf_button_border": "#00D8FF",
+    "pdf_button_border_hover": "#FF0202",
+    "pdf_button_text": "#FFFFFF",
+    "pdf_button_text_hover": "#FF0202",
+    "filter_button_border_hover": "color-mix(in srgb, var(--c-accent-1) 60%, transparent)",
+    "counter_text": "#00D8FF",
+    "counter_text_recalc": "#00D8FF",
+    "social_button_border_hover": "#00D8FF",
+    "social_button_surface_hover": "color-mix(in srgb, var(--c-accent-1) 18%, transparent)",
+    "cursor_ring_over_button": "#00D8FF",
+    "cursor_ring_over_link": "#1EAE34"
+  },
+  "experience_typography": {
+    "_comment": "Per-text-role font / colour / size for the Experience section. Injected by js/theme.js onto --exp-* tokens (defaults in css/tokens.css match these). 'font' is a family name (loaded automatically if not already in the page); 'color' is any CSS color; 'size' is any CSS length (e.g. '1.25rem'). 'date' and 'duration' are the two halves of each period label, split at the '·' separator.",
+    "company": {
+      "font": "Space Grotesk",
+      "color": "#F2F0FB",
+      "size": "1.563rem"
+    },
+    "company_location": {
+      "font": "JetBrains Mono",
+      "color": "#8B83B2",
+      "size": "0.8rem"
+    },
+    "role": {
+      "font": "Space Grotesk",
+      "color": "#F2F0FB",
+      "size": "1.25rem"
+    },
+    "date": {
+      "font": "JetBrains Mono",
+      "color": "#11E7EF",
+      "size": "0.8rem"
+    },
+    "duration": {
+      "font": "JetBrains Mono",
+      "color": "#12E4FF",
+      "size": "0.8rem"
+    },
+    "description": {
+      "font": "Inter",
+      "color": "#FFFFFF",
+      "size": "1.2rem"
+    },
+    "project": {
+      "font": "Space Grotesk",
+      "color": "#F2F0FB",
+      "size": "1.2rem"
+    },
+    "bullets": {
+      "font": "Inter",
+      "color": "#FFFFFF",
+      "size": "1.1rem"
+    }
+  },
+  "contact_form": {
+    "_comment": "Frontend POSTs {email, message} as JSON to this endpoint; a small server-side handler on the VPS (option B: Node + Nodemailer over Gmail SMTP) relays it to the owner's inbox. The recipient address lives ONLY on the server, never in the page.",
+    "endpoint": "/api/contact"
+  },
+  "particle_pages": {
+    "hero": {
+      "shape": "name",
+      "x": 0,
+      "y": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "color_mode": "palette-loop",
+      "color_loops": 52
+    },
+    "about": {
+      "shape": "frame",
+      "x": 0,
+      "y": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "frame_thickness": 0.04,
+      "frame_offset_x": 0.055,
+      "frame_offset_y": 0.08,
+      "frame_corner": 0.35
+    },
+    "expertise": {
+      "shape": "cardsframe",
+      "x": 0,
+      "y": -0.01,
+      "scaleX": 1,
+      "scaleY": 0.95,
+      "field_reach": 0.45,
+      "field_conc": 0.45,
+      "field_outbias": 0.86,
+      "field_depth": 1.8,
+      "field_jitter": 0.025,
+      "field_visibility": 0.12,
+      "field_spread": 300,
+      "field_homePull": 0.0005,
+      "field_chaos": 0.45
+    },
+    "experience": {
+      "shape": "galaxy",
+      "x": 0,
+      "y": 0,
+      "scaleX": 1,
+      "scaleY": 1
+    },
+    "education": {
+      "shape": "floor",
+      "x": 0,
+      "y": 0.14,
+      "scaleX": 1.1,
+      "scaleY": 1.15
+    },
+    "contact": {
+      "shape": "initials",
+      "x": 0,
+      "y": -0.03,
+      "scaleX": 1,
+      "scaleY": 1,
+      "fontFrac": 0.13,
+      "xFrac": 0.5,
+      "yFrac": 0.79,
+      "initials_frac": 0.2,
+      "line_frac": 0.75,
+      "scatter_spread": 0.4,
+      "scatter_conc": 0.6,
+      "line_offset": 0.005,
+      "color_mode": "palette-loop",
+      "color_loops": 28
+    }
+  }
+};
