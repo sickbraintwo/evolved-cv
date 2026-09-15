@@ -16,7 +16,7 @@ something you can explore.
 
 > **Live example:** a CV built with EvolvedCV → **https://ecv.2two.cloud**
 >
-> **The story behind it:** why it exists, how it was built, screenshots and the mobile version → **https://w-interaction.com/EC2.html** (Winteraction Lab, IT/EN)
+> **The story behind it:** why it exists, how it was built, screenshots and the mobile version → **https://w-interaction.com/evolved-cv.html** (Winteraction Lab, IT/EN)
 >
 > The data in *this* repository is **fictitious sample data** (a made-up person,
 > "Christina Debug") whose skills span five overlapping fields — just enough to
